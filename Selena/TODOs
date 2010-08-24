@@ -1,0 +1,7 @@
+# Create ANT script for TestNG xml files
+# Finish implementing TestNG Logger
+# Create XML Serialization implementation 
+# Create page objects
+# Replace Javascript call with selenium.fireEvent(locator, eventName)
+# Page Object should contain multiple location services and location capabilities like:
+  xpath, id, class, text, whatever.
