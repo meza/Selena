@@ -81,7 +81,7 @@
     </target>
 
 
-    <target name="buildProject" depends="prepare, checkstyle, buildSelena"
+    <target name="buildTestsuite" depends="prepare, checkstyle, buildSelena"
             description="Compiles the implementor project">
         <javac srcdir="${src.dir}"
                 destdir="${bin.dir}"
@@ -89,11 +89,11 @@
                 includes="**/*.java"
                 classpathref="classpath"
         />
-        <jar destfile="${jar.dir}/Tests.jar" basedir="${bin.dir}" />
+        <jar destfile="${jar.dir}/TestSuite.jar" basedir="${bin.dir}" />
     </target>
 
 
-    <target name="runtests" depends="prepare, buildProject">
+    <target name="runtests" depends="prepare, buildTestsuite">
         <taskdef  resource="testngtasks" classpath="${lib.dir}/testng.jar"/>
 
         <!-- Loading selenium properties -->
@@ -111,7 +111,7 @@
             <xmlfileset dir="${basedir}" includes="${testngXml}"/>
             <sysproperty key="org.uncommons.reportng.title" value="Report"/>
             <sysproperty key="configfilename"               value="${config.file}"/>
-            <sysproperty key="selenium.webPage"             value="${selenium.webPage}" />
+            <sysproperty key="selenium.baseUrl"             value="${selenium.baseUrl}" />
             <sysproperty key="selenium.host"                value="${selenium.host}" />
             <sysproperty key="selenium.port"                value="${selenium.port}" />
             <sysproperty key="selenium.browser"             value="${selenium.browser}" />
