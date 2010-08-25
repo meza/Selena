@@ -4,7 +4,7 @@
     <!-- If the file was not imported, set the selena dir to the directory
         containing this build file. (When imported, ${ant.file} is the importer
         file. The importer should be responsible for defining Selena dir -->
-    <dirname file="${ant.file}"             property="antfile.dir"/>
+    <dirname file="${ant.file}" property="antfile.dir"/>
     <condition property="selena.dir" value="${antfile.dir}">
         <not>
             <isset property="${selena.dir}"/>
@@ -14,13 +14,14 @@
     <!-- Setting default properties. ${basedir} will be the implementor porject's
         basedir. When not imported, it will be the Selena's base dir. -->
     <property name="testngXml"              value="testng.xml"/>
-    <property name="output.dir"	            value="${basedir}/output"/>
-    <property name="config.dir"	            value="${basedir}/conf"/>
-    <property name="src.dir"	            value="${basedir}/src" />
+    <property name="output.dir"             value="${basedir}/output"/>
+    <property name="config.dir"             value="${basedir}/config"/>
+    <property name="uixmls.dir"             value="${config.dir}/uixmls"/>
+    <property name="src.dir"                value="${basedir}/src" />
     <property name="lib.dir"                value="${selena.dir}/lib"/>
     <property name="bin.dir"                value="${output.dir}/bin"/>
     <property name="jar.dir"                value="${output.dir}/jar"/>
-    <property name="report.dir"	            value="${output.dir}/reports"/>
+    <property name="report.dir"             value="${output.dir}/reports"/>
     <property name="firefoxProfileTemplate" value="${config.dir}/profile"/>
 
     <target name="clean" description="Remove all generated content">
@@ -109,11 +110,12 @@
 
             <xmlfileset dir="${basedir}" includes="${testngXml}"/>
             <sysproperty key="org.uncommons.reportng.title" value="Report"/>
-            <sysproperty key="configfilename" value="${config.file}"/>
-            <sysproperty key="selenium.webPage" VALUE="${selenium.webPage}" />
-            <sysproperty key="selenium.host" VALUE="${selenium.host}" />
-            <sysproperty key="selenium.port" VALUE="${selenium.port}" />
-            <sysproperty key="selenium.browser" VALUE="${selenium.browser}" />
+            <sysproperty key="configfilename"               value="${config.file}"/>
+            <sysproperty key="selenium.webPage"             value="${selenium.webPage}" />
+            <sysproperty key="selenium.host"                value="${selenium.host}" />
+            <sysproperty key="selenium.port"                value="${selenium.port}" />
+            <sysproperty key="selenium.browser"             value="${selenium.browser}" />
+            <sysproperty key="uixmls.dir"                   value="${uixmls.dir}" />
         </testng>
     </target>
 
