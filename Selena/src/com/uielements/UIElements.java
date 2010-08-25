@@ -5,6 +5,7 @@ import java.util.List;
 import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
 
+
 /**
  * The root object for the UIElement xml files.
  *
@@ -18,8 +19,9 @@ public class UIElements
     /**
      * Div element list.
      */
-    @ElementList(name="Elements")
+    @ElementList(name = "Elements")
     public List<Div> div;
+
 
     /**
      * Get the Locator of a specific element.
@@ -32,38 +34,53 @@ public class UIElements
      * @return A string containing the locator searched for
      */
     public String getElementLocator(final LocatorTypes locator,
-            final String elementName)
+                                    final String elementName)
     {
-        for (Div divs : div)
+        for (Div divs : this.div)
         {
             for (WebElement elem : divs.webElement)
             {
                 if (elem.name.equals(elementName))
                 {
-                    switch (locator)
-                    {
-                        case ID:
-                            return elem.locators.id;
-                        case NAME:
-                            return elem.locators.name;
-                        case XPATH:
-                            return elem.locators.xpath;
-                        case CLASS:
-                            return elem.locators.className;
-                        case VALUE:
-                            return elem.locators.value;
-                        case JAPAN:
-                            return elem.locators.japan;
-                        case ENGLISH:
-                            return elem.locators.english;
-                        default:
-                            break;
-                    }
+                    return getLocator(locator, elem);
                 }
             }
         }
         return null;
     }
+
+
+    /**
+     * Fetch a locator based on the locator type
+     *
+     * @param locator The locator to fetch
+     * @param elem    The element to fetch from
+     *
+     * @return
+     */
+    private String getLocator(final LocatorTypes locator, WebElement elem)
+    {
+        switch (locator)
+        {
+            case ID:
+                return elem.locators.id;
+            case NAME:
+                return elem.locators.name;
+            case XPATH:
+                return elem.locators.xpath;
+            case CLASS:
+                return elem.locators.className;
+            case VALUE:
+                return elem.locators.value;
+            case JAPAN:
+                return elem.locators.japan;
+            case ENGLISH:
+                return elem.locators.english;
+            default:
+                return null;
+        }
+    }
+
 
     /**
      * Get the Locator of a specific element if only one exists
@@ -107,4 +124,6 @@ public class UIElements
         return null;
     }
 
+
 }
+

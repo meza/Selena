@@ -6,6 +6,7 @@
  */
 package com.annotation;
 
+
 /**
  *
  * Draft annotation type. Used to mark a test as draft.
@@ -22,11 +23,13 @@ public @interface Draft
      */
     String author();
 
+
     /**
      * Version.
      * @return
      */
     String version();
+
 
     /**
      * Short description.
@@ -34,4 +37,6 @@ public @interface Draft
      */
     String shortDescription();
 
+
 }
+

@@ -2,6 +2,7 @@ package com.uielements;
 
 import org.simpleframework.xml.Element;
 
+
 /**
  * Locator types.
  *
@@ -52,5 +53,5 @@ public class Locators
      */
     @Element(required = false)
     public String english;
-
 }
+

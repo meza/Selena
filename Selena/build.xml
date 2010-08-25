@@ -1,49 +1,56 @@
 <!-- Build file for our first application -->
-<project name="Selena" default="abstractWarning">
+<project name="Selena" default="test-with-selenium">
 
-
+    <!-- Setting default properties -->
     <dirname file="${ant.file}"             property="fw.dir"/>
-	<property name="testngXml"              value="testng.xml"/>
+    <property name="testngXml"              value="testng.xml"/>
     <property name="output.dir"	            value="${basedir}/output"/>
+    <property name="config.dir"	            value="${basedir}/conf"/>
     <property name="src.dir"	            value="${basedir}/src" />
     <property name="lib.dir"                value="${fw.dir}/lib"/>
     <property name="bin.dir"                value="${output.dir}/bin"/>
     <property name="jar.dir"                value="${output.dir}/jar"/>
     <property name="report.dir"	            value="${output.dir}/reports"/>
-	<property name="img.dir"                value="${output.dir}/imgs"/>
-	<property name="xml.dir"                value="${output.dir}/xmlresults"/>
-    <property name="firefoxProfileTemplate" value="${basedir}/conf/profile"/>
+    <property name="img.dir"                value="${output.dir}/imgs"/>
+    <property name="xml.dir"                value="${output.dir}/xmlresults"/>
+    <property name="firefoxProfileTemplate" value="${config.dir}/profile"/>
 
     <path id="classpath">
         <fileset dir="${jar.dir}" includes="**/*.jar" />
         <fileset dir="${lib.dir}" includes="**/*.jar" />
-    	<fileset dir="${bin.dir}" includes="**/*.class"/>
+        <fileset dir="${bin.dir}" includes="**/*.class"/>
     </path>
 
-    <target name="abstractWarning">
-	<fail message="Use this file as an include file for application implementations."/>
-    </target>
-
     <target name="clean">
-		<delete dir="${output.dir}"/>
+        <delete dir="${output.dir}"/>
     </target>
 
     <target name="prepare" depends="clean">
-    	<mkdir dir="${output.dir}"/>
-    	<mkdir dir="${output.dir}/bin"/>
-    	<mkdir dir="${jar.dir}" />
-    	<mkdir dir="${bin.dir}" />
-    	<mkdir dir="${report.dir}" />
-    	<mkdir dir="${img.dir}" />
-    	<mkdir dir="${xml.dir}" />
+        <mkdir dir="${output.dir}"/>
+        <mkdir dir="${output.dir}/bin"/>
+        <mkdir dir="${jar.dir}" />
+        <mkdir dir="${bin.dir}" />
+        <mkdir dir="${report.dir}" />
+        <mkdir dir="${img.dir}" />
+        <mkdir dir="${xml.dir}" />
     </target>
 
     <target name="build" depends="prepare">
-        <javac srcdir="${src.dir}" destdir="${bin.dir}" debug="true" includes="**/*.java" classpathref="classpath" />
+        <javac srcdir="${src.dir}"
+                destdir="${bin.dir}"
+                debug="FALSE"
+                includes="**/*.java"
+                classpathref="classpath"
+        />
     </target>
 
     <target name="compileAFW" depends="prepare">
-	<javac srcdir="${fw.dir}/src" destdir="${bin.dir}" debug="true" includes="**/*.java" classpathref="classpath" />
+        <javac srcdir="${fw.dir}/src"
+                destdir="${bin.dir}"
+                debug="false"
+                includes="**/*.java"
+                classpathref="classpath"
+        />
         <jar destfile="${lib.dir}/afw.jar" basedir="${bin.dir}" />
     </target>
 
@@ -52,10 +59,14 @@
     </target>
 
 
-	<target name="runtests" depends="prepare, compileAFW, jar, cs">
-		<taskdef  resource="testngtasks" classpath="${lib.dir}/testng.jar"/>
+    <target name="runtests" depends="prepare, compileAFW, jar, cs">
+        <taskdef  resource="testngtasks" classpath="${lib.dir}/testng.jar"/>
 
-		<testng classpathref="classpath"
+        <!-- Loading selenium properties -->
+        <property file="${config.dir}/seleniumConfig.local.properties" />
+        <property file="${config.dir}/seleniumConfig.properties" />
+
+        <testng classpathref="classpath"
 		        outputDir="${report.dir}"
 		        sourcedir="${src.dir}"
 		        haltOnfailure="true"
@@ -63,35 +74,42 @@
 		        listeners="org.uncommons.reportng.HTMLReporter,org.uncommons.reportng.JUnitXMLReporter">
 
 
-		   <xmlfileset dir="${basedir}" includes="${testngXml}"/>
-		   <sysproperty key="org.uncommons.reportng.title" value="Report"/>
-		   <sysproperty key="configfilename" value="${config.file}"/>
-		</testng>
-	</target>
+            <xmlfileset dir="${basedir}" includes="${testngXml}"/>
+            <sysproperty key="org.uncommons.reportng.title" value="Report"/>
+            <sysproperty key="configfilename" value="${config.file}"/>
+            <sysproperty key="selenium.webPage" VALUE="${selenium.webPage}" />
+            <sysproperty key="selenium.host" VALUE="${selenium.host}" />
+            <sysproperty key="selenium.port" VALUE="${selenium.port}" />
+            <sysproperty key="selenium.browser" VALUE="${selenium.browser}" />
+        </testng>
+    </target>
 
-	<target name="selenium-start">
-		<java jar="${selena.dir}/lib/selenium-server-standalone-2.0a5.jar"
+    <target name="selenium-start">
+        <java jar="${selena.dir}/lib/selenium-server-standalone-2.0a5.jar"
 		fork="true"
 		spawn="true">
-			<arg line="-firefoxProfileTemplate ${firefoxProfileTemplate}"/>
-		</java>
-		<sleep seconds="1"/>
-	</target>
+            <arg line="-firefoxProfileTemplate ${firefoxProfileTemplate}"/>
+        </java>
+        <sleep seconds="1"/>
+    </target>
 
-	<target name="selenium-stop">
-		<get taskname="selenium-shutdown"
+    <target name="selenium-stop">
+        <get taskname="selenium-shutdown"
 		src="http://localhost:4444/selenium-server/driver/?cmd=shutDownSeleniumServer"
 		dest="result.txt"/>
-	</target>
+    </target>
 
 
-	<target name="cs">
-	    <taskdef resource="checkstyletask.properties" classpath="${lib.dir}/checkstyle-all-5.1.jar"/>
-	    <checkstyle classpathref="classpath" config="${fw.dir}/checkstyle/checkstyle_config.xml">
-		<fileset dir="${src.dir}" includes="**/*.java"/>
-		<formatter type="plain"/>
-		<formatter type="xml" toFile="${report.dir}/checkstyle.xml"/>
-	    </checkstyle>
-	</target>
+    <target name="cs">
+        <taskdef resource="checkstyletask.properties"
+        classpath="${lib.dir}/checkstyle-all-5.1.jar"/>
+        
+        <checkstyle classpathref="classpath"
+        config="${fw.dir}/checkstyle/checkstyle_config.xml">
+            <fileset dir="${src.dir}" includes="**/*.java"/>
+            <formatter type="plain"/>
+            <formatter type="xml" toFile="${report.dir}/checkstyle.xml"/>
+        </checkstyle>
+    </target>
 
 </project>

@@ -1,57 +1,50 @@
 package com.utilities.config;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.Properties;
+import org.testng.Assert;
+
 
 /**
- * Configuration class. It provides access for java property files.
+ * Provides access to system properties
  *
- * @author Brautigam Gergely
+ * @author meza <meza@meza.hu>
  *
  */
 public final class Configuration
 {
 
     /**
+     * Holds the Properties.
+     */
+    private static Properties properties;
+
+
+    /**
      * Private constructor of Configuration class.
      */
     private Configuration()
     {
-
     }
 
-    /**
-     * Properties.
-     */
-    private static Properties properties;
-
-    static
-    {
-        properties = new Properties();
-        try
-        {
-            properties.load(new FileInputStream(
-                    "conf//userConfiguration.properties"));
-        } catch (FileNotFoundException e)
-        {
-            e.printStackTrace();
-        } catch (IOException e)
-        {
-            e.printStackTrace();
-        }
-    }
 
     /**
-     * Get a Value from a configuration file.
+     * Retrieve a Value from the sysprops and asserts that it is not null.
      *
      * @param value The name of the value to look for
-     * @return The value of the variable looked for
+     *
+     * @return
      */
     public static String getValue(final String value)
     {
-        return properties.getProperty(value);
+        properties = System.getProperties();
+        String result = properties.getProperty(value);
+
+        Assert.assertNotNull(
+            result,
+            "The requested configuration " + value + " is not found");
+        return result;
     }
 
+
 }
+

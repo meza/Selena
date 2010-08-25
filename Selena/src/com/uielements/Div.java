@@ -6,6 +6,7 @@ import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
 
+
 /**
  * Div element class.
  *
@@ -15,15 +16,17 @@ import org.simpleframework.xml.Root;
 @Root
 public class Div
 {
+
     /**
      * Web Element List.
      */
-    @ElementList(name="Div", inline=true)
+    @ElementList(name = "Div", inline = true)
     public List<WebElement> webElement;
 
     /**
      *
      */
-    @Attribute(required=false)
+    @Attribute(required = false)
     public String name;
 }
+

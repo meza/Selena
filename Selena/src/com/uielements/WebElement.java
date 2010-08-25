@@ -4,24 +4,28 @@ import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
 
+
 /**
  * Web Element object.
  *
- * @author hannibal
+ * @author Brautigam Gergely
  *
  */
-@Root(name="WebElement")
+@Root(name = "WebElement")
 public class WebElement
 {
+
     /**
-     * Locators.
+     * <WebElement><Locators/></WebElement>
      */
-    @Element(name="Locators")
+    @Element(name = "Locators")
     public Locators locators;
 
     /**
-     * Name.
+     * <WebElement name="xy"/>
      */
     @Attribute
     public String name;
+
 }
+
