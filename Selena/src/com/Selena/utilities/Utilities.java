@@ -1,4 +1,4 @@
-package com.utilities;
+package com.Selena.utilities;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -27,8 +27,8 @@ import org.w3c.dom.Text;
 
 import com.thoughtworks.selenium.Selenium;
 import com.thoughtworks.selenium.Wait;
-import com.uielements.LocatorTypes;
-import com.uielements.UIElements;
+import com.Selena.uielements.LocatorTypes;
+import com.Selena.uielements.UIElements;
 
 
 /**

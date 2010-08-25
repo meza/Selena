@@ -1,4 +1,4 @@
-package com.utilities.config;
+package com.Selena.utilities.config;
 
 import java.util.Properties;
 import org.testng.Assert;
