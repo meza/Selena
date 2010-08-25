@@ -1,65 +1,98 @@
 <!-- Build file for our first application -->
 <project name="Selena" default="test-with-selenium">
 
-    <!-- Setting default properties -->
-    <dirname file="${ant.file}"             property="fw.dir"/>
+    <!-- If the file was not imported, set the selena dir to the directory
+        containing this build file. (When imported, ${ant.file} is the importer
+        file. The importer should be responsible for defining Selena dir -->
+    <dirname file="${ant.file}"             property="antfile.dir"/>
+    <condition property="selena.dir" value="${antfile.dir}">
+        <not>
+            <isset property="${selena.dir}"/>
+        </not>
+    </condition>
+
+    <!-- Setting default properties. ${basedir} will be the implementor porject's
+        basedir. When not imported, it will be the Selena's base dir. -->
     <property name="testngXml"              value="testng.xml"/>
     <property name="output.dir"	            value="${basedir}/output"/>
     <property name="config.dir"	            value="${basedir}/conf"/>
     <property name="src.dir"	            value="${basedir}/src" />
-    <property name="lib.dir"                value="${fw.dir}/lib"/>
+    <property name="lib.dir"                value="${selena.dir}/lib"/>
     <property name="bin.dir"                value="${output.dir}/bin"/>
     <property name="jar.dir"                value="${output.dir}/jar"/>
     <property name="report.dir"	            value="${output.dir}/reports"/>
-    <property name="img.dir"                value="${output.dir}/imgs"/>
-    <property name="xml.dir"                value="${output.dir}/xmlresults"/>
     <property name="firefoxProfileTemplate" value="${config.dir}/profile"/>
 
-    <path id="classpath">
-        <fileset dir="${jar.dir}" includes="**/*.jar" />
-        <fileset dir="${lib.dir}" includes="**/*.jar" />
-        <fileset dir="${bin.dir}" includes="**/*.class"/>
-    </path>
-
-    <target name="clean">
+    <target name="clean" description="Remove all generated content">
         <delete dir="${output.dir}"/>
     </target>
 
-    <target name="prepare" depends="clean">
+
+    <target name="reportDir">
+        <mkdir dir="${report.dir}" />
+    </target>
+
+    <target name="buildDirs">
         <mkdir dir="${output.dir}"/>
-        <mkdir dir="${output.dir}/bin"/>
         <mkdir dir="${jar.dir}" />
         <mkdir dir="${bin.dir}" />
-        <mkdir dir="${report.dir}" />
-        <mkdir dir="${img.dir}" />
-        <mkdir dir="${xml.dir}" />
     </target>
 
-    <target name="build" depends="prepare">
-        <javac srcdir="${src.dir}"
-                destdir="${bin.dir}"
-                debug="FALSE"
-                includes="**/*.java"
-                classpathref="classpath"
-        />
+    <target name="prepare" depends="clean, reportDir, buildDirs"
+            description="Create all needed dirs">
+
+        <path id="classpath">
+            <fileset dir="${jar.dir}" includes="**/*.jar" />
+            <fileset dir="${lib.dir}" includes="**/*.jar" />
+            <fileset dir="${bin.dir}" includes="**/*.class"/>
+        </path>
+
     </target>
 
-    <target name="compileAFW" depends="prepare">
-        <javac srcdir="${fw.dir}/src"
+
+    <target name="checkstyle" depends="reportDir">
+
+        <path id="checkstylePath">
+            <fileset dir="${lib.dir}" includes="**/*.jar" />
+        </path>
+
+        <taskdef resource="checkstyletask.properties"
+        classpath="${lib.dir}/checkstyle-all-5.1.jar"/>
+
+        <checkstyle classpathref="checkstylePath"
+        config="${selena.dir}/config/checkstyle_config.xml">
+            <fileset dir="${src.dir}" includes="**/*.java"/>
+            <formatter type="plain"/>
+            <formatter type="xml" toFile="${report.dir}/checkstyle.xml"/>
+        </checkstyle>
+    </target>
+
+
+    <target name="buildSelena" depends="prepare"
+            description="compile Selena lib">
+        <javac srcdir="${selena.dir}/src"
                 destdir="${bin.dir}"
                 debug="false"
                 includes="**/*.java"
                 classpathref="classpath"
         />
-        <jar destfile="${lib.dir}/afw.jar" basedir="${bin.dir}" />
+        <jar destfile="${jar.dir}/Selena.jar" basedir="${bin.dir}" />
     </target>
 
-    <target name="jar" depends="prepare, build">
+
+    <target name="buildProject" depends="prepare, checkstyle, buildSelena"
+            description="Compiles the implementor project">
+        <javac srcdir="${src.dir}"
+                destdir="${bin.dir}"
+                debug="false"
+                includes="**/*.java"
+                classpathref="classpath"
+        />
         <jar destfile="${jar.dir}/Tests.jar" basedir="${bin.dir}" />
     </target>
 
 
-    <target name="runtests" depends="prepare, compileAFW, jar, cs">
+    <target name="runtests" depends="prepare, buildProject">
         <taskdef  resource="testngtasks" classpath="${lib.dir}/testng.jar"/>
 
         <!-- Loading selenium properties -->
@@ -84,6 +117,7 @@
         </testng>
     </target>
 
+
     <target name="selenium-start">
         <java jar="${selena.dir}/lib/selenium-server-standalone-2.0a5.jar"
 		fork="true"
@@ -93,6 +127,7 @@
         <sleep seconds="1"/>
     </target>
 
+
     <target name="selenium-stop">
         <get taskname="selenium-shutdown"
 		src="http://localhost:4444/selenium-server/driver/?cmd=shutDownSeleniumServer"
@@ -100,16 +135,9 @@
     </target>
 
 
-    <target name="cs">
-        <taskdef resource="checkstyletask.properties"
-        classpath="${lib.dir}/checkstyle-all-5.1.jar"/>
-        
-        <checkstyle classpathref="classpath"
-        config="${fw.dir}/checkstyle/checkstyle_config.xml">
-            <fileset dir="${src.dir}" includes="**/*.java"/>
-            <formatter type="plain"/>
-            <formatter type="xml" toFile="${report.dir}/checkstyle.xml"/>
-        </checkstyle>
-    </target>
+    <target
+        name="test-with-selenium"
+        depends="selenium-start, runtests, selenium-stop"
+        description="Spawns a selenium server on localhost, runs the tests and stops the server"/>
 
 </project>
