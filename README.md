@@ -11,7 +11,8 @@ Uasge
 *   Create a new directory for the test code.
 *   Change to that directory.
 *   Create a build.xml with the following content
-`<project name="projectName" default="test-with-selenium">
+`
+<project name="projectName" default="test-with-selenium">
 
     <!-- Set the default application specific properties -->
     <property name="selena.dir" value="${basedir}/../Selena" />
@@ -28,5 +29,6 @@ Uasge
 
     <target name="checkstyle" depends="Selena.checkstyle"/>
 
-</project>`
+</project>
+`
 *   issue <code>ant initProject</code>
