@@ -13,16 +13,50 @@
 
     <!-- Setting default properties. ${basedir} will be the implementor porject's
         basedir. When not imported, it will be the Selena's base dir. -->
-    <property name="testngXml"              value="testng.xml"/>
-    <property name="output.dir"             value="${basedir}/output"/>
-    <property name="config.dir"             value="${basedir}/config"/>
-    <property name="uixmls.dir"             value="${config.dir}/uixmls"/>
-    <property name="src.dir"                value="${basedir}/src" />
-    <property name="lib.dir"                value="${selena.dir}/lib"/>
-    <property name="bin.dir"                value="${output.dir}/bin"/>
-    <property name="jar.dir"                value="${output.dir}/jar"/>
-    <property name="report.dir"             value="${output.dir}/reports"/>
-    <property name="firefoxProfileTemplate" value="${config.dir}/profile"/>
+    <property name="output.dir"             location="${basedir}/build"/>
+    <property name="config.dir"             location="${basedir}/config"/>
+    <property name="uixmls.dir"             location="${config.dir}/uixmls"/>
+    <property name="testngDir"              location="${config.dir}/testng"/>
+    <property name="src.dir"                location="${basedir}/src" />
+    <property name="lib.dir"                location="${selena.dir}/lib"/>
+    <property name="bin.dir"                location="${output.dir}/bin"/>
+    <property name="jar.dir"                location="${output.dir}/jar"/>
+    <property name="report.dir"             location="${output.dir}/reports"/>
+    <property name="log.dir"                location="${output.dir}/logs"/>
+    <property name="firefoxProfileTemplate" location="${selena.dir}/config/profile"/>
+
+    <propertyfile file="${basedir}/Selena.properties" comment="Main properties">
+        <entry key="selenium.host"
+                default="localhost"
+                type="string"
+        />
+        <entry key="selenium.port"
+                default="4444"
+                type="string"
+        />
+        <entry key="selenium.browser"
+                default="*chrome"
+                type="string"
+        />
+        <entry key="selenium.baseUrl"
+                default="http://www.google.com"
+                type="string"
+        />
+    </propertyfile>
+    <property file="${basedir}/build.properties"/>
+    <property file="${basedir}/Selena.properties"/>
+
+
+    <target name="initProject">
+        <copy includeemptydirs="true"
+             todir="${basedir}/config"
+             overwrite="false"
+        >
+            <fileset dir="${selena.dir}/skeleton/config"/>
+        </copy>
+        <mkdir dir="src"/>
+    </target>
+
 
     <target name="clean" description="Remove all generated content">
         <delete dir="${output.dir}"/>
@@ -31,6 +65,10 @@
 
     <target name="reportDir">
         <mkdir dir="${report.dir}" />
+    </target>
+
+    <target name="logDir">
+        <mkdir dir="${log.dir}" />
     </target>
 
     <target name="buildDirs">
@@ -51,8 +89,8 @@
     </target>
 
 
-    <target name="checkstyle" depends="reportDir">
-
+    <target name="checkstyle" depends="logDir">
+        <mkdir dir="${log.dir}/checkstyle" />
         <path id="checkstylePath">
             <fileset dir="${lib.dir}" includes="**/*.jar" />
         </path>
@@ -64,7 +102,7 @@
         config="${selena.dir}/config/checkstyle_config.xml">
             <fileset dir="${src.dir}" includes="**/*.java"/>
             <formatter type="plain"/>
-            <formatter type="xml" toFile="${report.dir}/checkstyle.xml"/>
+            <formatter type="xml" toFile="${log.dir}/checkstyle/checkstyle.xml"/>
         </checkstyle>
     </target>
 
@@ -90,10 +128,13 @@
                 classpathref="classpath"
         />
         <jar destfile="${jar.dir}/TestSuite.jar" basedir="${bin.dir}" />
+        <buildnumber file="version"/>
     </target>
 
 
     <target name="runtests" depends="prepare, buildTestsuite">
+        <property name="testngOutput" value="${report.dir}/testNG"/>
+        <mkdir dir="" />
         <taskdef  resource="testngtasks" classpath="${lib.dir}/testng.jar"/>
 
         <!-- Loading selenium properties -->
@@ -101,14 +142,16 @@
         <property file="${config.dir}/seleniumConfig.properties" />
 
         <testng classpathref="classpath"
-		        outputDir="${report.dir}"
+		        outputDir="${report.dir}/testNG"
 		        sourcedir="${src.dir}"
+                workingDir="${testngOutput}"
 		        haltOnfailure="true"
 		        delegateCommandSystemProperties="true"
-		        listeners="org.uncommons.reportng.HTMLReporter,org.uncommons.reportng.JUnitXMLReporter">
+                useDefaultListeners="false"
+                listeners="org.uncommons.reportng.HTMLReporter,org.uncommons.reportng.JUnitXMLReporter"
+		>
+            <xmlfileset dir="${testngDir}" includes="**/*.xml"/>
 
-
-            <xmlfileset dir="${basedir}" includes="${testngXml}"/>
             <sysproperty key="org.uncommons.reportng.title" value="Report"/>
             <sysproperty key="configfilename"               value="${config.file}"/>
             <sysproperty key="selenium.baseUrl"             value="${selenium.baseUrl}" />
@@ -117,6 +160,9 @@
             <sysproperty key="selenium.browser"             value="${selenium.browser}" />
             <sysproperty key="uixmls.dir"                   value="${uixmls.dir}" />
         </testng>
+        <move todir="${log.dir}/testNG" overwrite="true">
+            <fileset dir="${report.dir}/testNG/xml"/>
+        </move>
     </target>
 
 
@@ -133,7 +179,8 @@
     <target name="selenium-stop">
         <get taskname="selenium-shutdown"
 		src="http://localhost:4444/selenium-server/driver/?cmd=shutDownSeleniumServer"
-		dest="result.txt"/>
+		dest="${output.dir}/result.txt"/>
+        <delete file="${output.dir}/result.txt"/>
     </target>
 
 
