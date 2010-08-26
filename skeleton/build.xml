@@ -1,0 +1,13 @@
+<project name="projectName" default="test-with-selenium">
+
+    <!-- Set the default application specific properties -->
+    <property name="selena.dir" location="${basedir}/../Selena" />
+
+    <import file="${selena.dir}/build.xml"/>
+
+    <target name="initProject" depends="Selena.initProject"/>
+    <target name="test-with-selenium" depends="Selena.test-with-selenium"/>
+    <target name="clean" depends="Selena.clean"/>
+    <target name="build" depends="Selena.buildTestsuite"/>
+    <target name="checkstyle" depends="Selena.checkstyle"/>
+</project>

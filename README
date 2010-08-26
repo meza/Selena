@@ -8,25 +8,10 @@ Requirements:
 *   ANT (>=1.7.1)
 
 Uasge
+*   Clone Selena
 *   Create a new directory for the test code.
 *   Change to that directory.
-*   Create a build.xml with the following content
-<project name="projectName" default="test-with-selenium">
-
-    <!-- Set the default application specific properties -->
-    <property name="selena.dir" value="${basedir}/../Selena" />
-
-    <import file="${selena.dir}/build.xml"/>
-
-    <target name="initProject" depends="Selena.initProject"/>
-
-    <target name="test-with-selenium" depends="Selena.test-with-selenium"/>
-
-    <target name="clean" depends="Selena.clean"/>
-
-    <target name="build" depends="Selena.buildTestsuite"/>
-
-    <target name="checkstyle" depends="Selena.checkstyle"/>
-
-</project>
-*   issue <code>ant initProject</code>
+*   Copy <SelenaDir>/skeleton/build.xml to your project's root
+*   Set selena.dir property to point to the directory where you've cloned Selena
+*   Issue: ant initProject
+*   You can try to issue an ant command, but the build will fail saying there were no tests.
