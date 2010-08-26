@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<UIElements>
+    <Elements>
+        <Page name="Skeleton Page"> <!-- This is used to distinguish between sections -->
+            <WebElement name="aNamedDiv">
+                <Locators>
+                    <id>aNamedDivsID</id>
+                </Locators>
+            </WebElement>
+            <WebElement name="aDivWithXpath">
+                <Locators>
+                    <xpath>//div[@valign="someTop"]</xpath>
+                </Locators>
+            </WebElement>
+            <WebElement name="aDivWithAll">
+        	<Locators>
+        	    <id>theDivID</id>
+        	    <xpath>//div[@id="theDivID"]</xpath>
+        	    <class>theDivsClass</class>
+        	</Locators>
+            </WebElement>
+            <WebElement name="anInputField">
+        	<Locators>
+        	    <name>inputFieldName</name>
+        	</Locators>
+            </WebElement>
+        </Page>
+    </Elements>
+</UIElements>
