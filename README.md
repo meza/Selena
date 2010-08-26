@@ -4,15 +4,14 @@ Selena is a fork of Skarslo's ( http://twitter.com/Skarlso) original WebAuthFW (
 The project aims to collect a set of tools and a set of processes that helps automating end-to-end tests via borwsers.
 
 Requirements:
- * JDK (>=1.6)
- * ANT (>=1.7.1)
+*   JDK (>=1.6)
+*   ANT (>=1.7.1)
 
 Uasge
- * Create a new directory for the test code.
- * Change to that directory.
- * Create a build.xml with the following content
-<pre><code>
-<project name="projectName" default="test-with-selenium">
+*   Create a new directory for the test code.
+*   Change to that directory.
+*   Create a build.xml with the following content
+`<project name="projectName" default="test-with-selenium">
 
     <!-- Set the default application specific properties -->
     <property name="selena.dir" value="${basedir}/../Selena" />
@@ -29,6 +28,5 @@ Uasge
 
     <target name="checkstyle" depends="Selena.checkstyle"/>
 
-</project>
-</code></pre>
- * issue <code>ant initProject</code>
+</project>`
+*   issue <code>ant initProject</code>
