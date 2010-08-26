@@ -8,19 +8,19 @@ import org.simpleframework.xml.Root;
 
 
 /**
- * Div element class.
+ * Page element class.
  *
  * @author hannibal
  *
  */
 @Root
-public class Div
+public class Page
 {
 
     /**
      * Web Element List.
      */
-    @ElementList(name = "Div", inline = true)
+    @ElementList(name = "Page", inline = true)
     public List<WebElement> webElement;
 
     /**
