@@ -17,10 +17,10 @@ public class UIElements
 {
 
     /**
-     * Div element list.
+     * Page element list.
      */
     @ElementList(name = "Elements")
-    public List<Div> div;
+    public List<Page> div;
 
 
     /**
@@ -36,7 +36,7 @@ public class UIElements
     public String getElementLocator(final LocatorTypes locator,
                                     final String elementName)
     {
-        for (Div divs : this.div)
+        for (Page divs : this.div)
         {
             for (WebElement elem : divs.webElement)
             {
@@ -72,10 +72,6 @@ public class UIElements
                 return elem.locators.className;
             case VALUE:
                 return elem.locators.value;
-            case JAPAN:
-                return elem.locators.japan;
-            case ENGLISH:
-                return elem.locators.english;
             default:
                 return null;
         }
@@ -94,7 +90,7 @@ public class UIElements
     public String getElementLocator(final String elementName)
     {
 
-        for (Div divs : div)
+        for (Page divs : div)
         {
             for (WebElement elem : divs.webElement)
             {
@@ -107,8 +103,6 @@ public class UIElements
                     locators.add(elem.locators.id);
                     locators.add(elem.locators.name);
                     locators.add(elem.locators.value);
-                    locators.add(elem.locators.japan);
-                    locators.add(elem.locators.english);
 
                     for (String loc : locators)
                     {
