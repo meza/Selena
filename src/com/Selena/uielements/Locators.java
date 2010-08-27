@@ -43,15 +43,9 @@ public class Locators
     public String value;
 
     /**
-     * Japan.
+     * Link.
      */
     @Element(required = false)
-    public String japan;
-
-    /**
-     * English.
-     */
-    @Element(required = false)
-    public String english;
+    public String link;
 }
 

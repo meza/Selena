@@ -28,7 +28,7 @@ import org.w3c.dom.Text;
 import com.thoughtworks.selenium.Selenium;
 import com.thoughtworks.selenium.Wait;
 import com.Selena.uielements.LocatorTypes;
-import com.Selena.uielements.UIElements;
+import com.Selena.uielements.Page;
 
 
 /**
@@ -585,13 +585,13 @@ public final class Utilities
      * @param elementName
      *            the name of the element locator.
      * @param elementContainer
-     *            UIElements class containing the given element.
+     *            Page class containing the given element.
      * @param langLocatorType
      *      element locator type addressing the checked language.
      */
     public static void checkElementTextLanguage(final Selenium selenium,
                                                 final String elementName,
-                                                final UIElements elementContainer,
+                                                final Page elementContainer,
                                                 final LocatorTypes langLocatorType)
     {
         /**
@@ -633,13 +633,13 @@ public final class Utilities
      * @param elementName
      *            the name of the element locator.
      * @param elementContainer
-     *            UIElements class containing the given element.
+     *            Page class containing the given element.
      * @param langLocatorType
      *      element locator type addressing the checked language.
      */
     public static void checkElementValueLanguage(final Selenium selenium,
                                                  final String elementName,
-                                                 final UIElements elementContainer,
+                                                 final Page elementContainer,
                                                  final LocatorTypes langLocatorType)
     {
         /**

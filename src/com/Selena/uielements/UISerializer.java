@@ -27,16 +27,16 @@ public class UISerializer
      * @throws UIXmlReadErrorException
      * @return An serialized UIElement instance
      */
-    public UIElements deserialize(final String xml) throws
+    public Page deserialize(final String xml) throws
         UIXmlReadErrorException
     {
         Serializer serializer = new Persister();
         File source = new File(xml);
-        UIElements uiElement = null;
+        Page uiElement = null;
 
         try
         {
-            uiElement = serializer.read(UIElements.class, source);
+            uiElement = serializer.read(Page.class, source);
         } catch (Exception e)
         {
             throw new UIXmlReadErrorException(e.getMessage());

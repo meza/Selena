@@ -6,8 +6,9 @@
 package com.Selena;
 
 import com.thoughtworks.selenium.Selenium;
-import com.Selena.uielements.UIElements;
+import com.Selena.uielements.Page;
 import com.Selena.uielements.UISerializer;
+import com.Selena.utilities.config.Configuration;
 import org.testng.Assert;
 import org.testng.Reporter;
 
@@ -26,9 +27,9 @@ public class BasePage
     protected Selenium selenium;
 
     /**
-     * UIElements for social logins like google, yahoo.
+     * Page for social logins like google, yahoo.
      */
-    protected UIElements elements;
+    protected Page elements;
 
     /**
      * Default time out for Pages.
@@ -44,6 +45,21 @@ public class BasePage
      * Default element wait.
      */
     protected final int defaultElementTimeOut = 30000;
+
+
+    public String getUrl()
+    {
+        return elements.getUrl().toString();
+    }
+
+
+    /**
+     * Open the page.
+     */
+    public void open()
+    {
+        this.openWebPage(this.getUrl());
+    }
 
 
     /**
@@ -66,7 +82,8 @@ public class BasePage
     {
         this.selenium = sel;
         UISerializer uiSerializer = new UISerializer();
-        elements = uiSerializer.deserialize(configFile);
+        elements = uiSerializer.deserialize(Configuration.getValue("uixmls.dir")
+                                            + "/" + configFile);
     }
 
 
@@ -84,7 +101,7 @@ public class BasePage
 
 
     /**
-     * Fetch a locator from the UIElements config and assert that
+     * Fetch a locator from the Page config and assert that
      * it is not null.
      *
      * @param elementName The element to fetch

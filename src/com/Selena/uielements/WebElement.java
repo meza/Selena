@@ -26,6 +26,5 @@ public class WebElement
      */
     @Attribute
     public String name;
-
 }
 
