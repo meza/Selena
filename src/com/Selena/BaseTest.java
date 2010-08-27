@@ -154,10 +154,9 @@ public class BaseTest
             Configuration.getValue("selenium.baseUrl")));
         selenium = new DefaultSelenium(
             Configuration.getValue("selenium.host"),
-            Integer.parseInt(Configuration.getValue("selenium.port")), 
+            Integer.parseInt(Configuration.getValue("selenium.port")),
             Configuration.getValue("selenium.browser"),
-            Configuration.getValue("selenium.baseUrl")
-        );
+            Configuration.getValue("selenium.baseUrl"));
     }
 
 
