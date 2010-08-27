@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+    <xs:complexType name="LocatorsType">
+        <xs:choice minOccurs="1" maxOccurs="unbounded">
+            <xs:element name="class" type="xs:string"/>
+            <xs:element name="id"    type="xs:string"/>
+            <xs:element name="link"  type="xs:string"/>
+            <xs:element name="name"  type="xs:string"/>
+            <xs:element name="value" type="xs:string"/>
+            <xs:element name="xpath" type="xs:string"/>
+        </xs:choice>
+    </xs:complexType>
+
+    <xs:complexType name="WebElementType">
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="Locators" type="LocatorsType"/>
+        </xs:choice>
+        <xs:attribute name="name" type="xs:string" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="ElementsType">
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="WebElement" type="WebElementType"/>
+        </xs:choice>
+    </xs:complexType>
+
+    <xs:element name="Page">
+        <xs:complexType>
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
+                <xs:element name="Elements" type="ElementsType"/>
+            </xs:choice>
+            <xs:attribute name="url" type="xs:string" use="optional"/>
+            <xs:attribute name="path" type="xs:string" use="optional"/>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>
