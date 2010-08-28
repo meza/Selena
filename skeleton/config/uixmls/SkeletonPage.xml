@@ -1,29 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-xsi:noNamespaceSchemaLocation="SelenaPage.xsd"
-path="munchkin" url="alternateillusion.com">
+xsi:noNamespaceSchemaLocation="SelenaPage.xsd">
     <Elements>
         <WebElement name="aNamedDiv">
             <Locators>
                 <id>aNamedDivsID</id>
             </Locators>
-        </WebElement>
-        <WebElement name="aDivWithXpath">
-            <Locators>
-                <xpath>//div[@valign="someTop"]</xpath>
-            </Locators>
-        </WebElement>
-        <WebElement name="aDivWithAll">
-        <Locators>
-            <id>theDivID</id>
-            <xpath>//div[@id="theDivID"]</xpath>
-            <class>theDivsClass</class>
-        </Locators>
-        </WebElement>
-        <WebElement name="anInputField">
-        <Locators>
-            <name>inputFieldName</name>
-        </Locators>
         </WebElement>
     </Elements>
 </Page>
