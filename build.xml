@@ -16,7 +16,7 @@
     <property name="output.dir"             location="${basedir}/build"/>
     <property name="config.dir"             location="${basedir}/config"/>
     <property name="uixmls.dir"             location="${config.dir}/uixmls"/>
-    <property name="testngDir"              location="${config.dir}/testng"/>
+    <property name="testng.dir"             location="${config.dir}/testng"/>
     <property name="src.dir"                location="${basedir}/src" />
     <property name="lib.dir"                location="${selena.dir}/lib"/>
     <property name="bin.dir"                location="${output.dir}/bin"/>
@@ -82,6 +82,7 @@
 
         <path id="classpath">
             <fileset dir="${jar.dir}" includes="**/*.jar" />
+            <fileset dir="${selena.dir}/lib" includes="**/*.jar" />
             <fileset dir="${lib.dir}" includes="**/*.jar" />
             <fileset dir="${bin.dir}" includes="**/*.class"/>
         </path>
@@ -93,10 +94,11 @@
         <mkdir dir="${log.dir}/checkstyle" />
         <path id="checkstylePath">
             <fileset dir="${lib.dir}" includes="**/*.jar" />
+            <fileset dir="${selena.dir}/lib" includes="**/*.jar" />
         </path>
 
         <taskdef resource="checkstyletask.properties"
-        classpath="${lib.dir}/checkstyle-all-5.1.jar"/>
+        classpath="${selena.dir}/lib/checkstyle-all-5.1.jar"/>
 
         <checkstyle classpathref="checkstylePath"
         config="${selena.dir}/config/checkstyle_config.xml">
@@ -135,7 +137,7 @@
     <target name="runtests" depends="prepare, buildTestsuite">
         <property name="testngOutput" value="${report.dir}/testNG"/>
         <mkdir dir="" />
-        <taskdef  resource="testngtasks" classpath="${lib.dir}/testng.jar"/>
+        <taskdef  resource="testngtasks" classpath="${selena.dir}/lib/testng.jar"/>
 
         <!-- Loading selenium properties -->
         <property file="${config.dir}/seleniumConfig.local.properties" />
@@ -150,7 +152,7 @@
                 useDefaultListeners="false"
                 listeners="org.uncommons.reportng.HTMLReporter,org.uncommons.reportng.JUnitXMLReporter"
 		>
-            <xmlfileset dir="${testngDir}" includes="**/*.xml"/>
+            <xmlfileset dir="${testng.dir}" includes="**/*.xml"/>
 
             <sysproperty key="org.uncommons.reportng.title" value="Report"/>
             <sysproperty key="configfilename"               value="${config.file}"/>
