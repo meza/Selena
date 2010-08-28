@@ -129,10 +129,18 @@ public class Page
             case XPATH:
                 return elem.locators.xpath;
             case CLASS:
-                return elem.locators.className;
+                if (null == elem.locators.className)
+                {
+                    return null;
+                }
+                return "class=" + elem.locators.className;
             case VALUE:
                 return elem.locators.value;
             case LINK:
+                if (null == elem.locators.link)
+                {
+                    return null;
+                }
                 return "link=" + elem.locators.link;
             default:
                 return null;
@@ -158,12 +166,12 @@ public class Page
                 ArrayList<String> locators = new ArrayList<String>();
 
 
-                locators.add(getLocator(LocatorTypes.CLASS, elem));
-                locators.add(getLocator(LocatorTypes.XPATH, elem));
                 locators.add(getLocator(LocatorTypes.ID, elem));
+                locators.add(getLocator(LocatorTypes.XPATH, elem));
                 locators.add(getLocator(LocatorTypes.NAME, elem));
                 locators.add(getLocator(LocatorTypes.VALUE, elem));
                 locators.add(getLocator(LocatorTypes.LINK, elem));
+                locators.add(getLocator(LocatorTypes.CLASS, elem));
 
                 for (String loc : locators)
                 {
