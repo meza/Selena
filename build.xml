@@ -134,6 +134,26 @@
     </target>
 
 
+    <target name="test" depends="prepare, buildSelena">
+        <path id="classpath.test">
+            <path refid="classpath"/>
+            <pathelement location="${selena.dir}/tests"/>
+        </path>
+        <javac srcdir="${selena.dir}/tests"
+                verbose="false">
+            <classpath refid="classpath.test"/>
+        </javac>
+        <junit>
+            <classpath refid="classpath.test" />
+            <formatter type="plain" usefile="false" />
+            <batchtest fork="false">
+                <fileset dir="${selena.dir}/tests" includes="**/*.java"/>
+            </batchtest>
+        </junit>
+
+    </target>
+
+
     <target name="runtests" depends="prepare, buildTestsuite">
         <property name="testngOutput" value="${report.dir}/testNG"/>
         <mkdir dir="" />
