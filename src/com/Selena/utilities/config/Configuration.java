@@ -1,7 +1,6 @@
 package com.Selena.utilities.config;
 
 import java.util.Properties;
-import org.testng.Assert;
 
 
 /**
@@ -39,9 +38,10 @@ public final class Configuration
         properties = System.getProperties();
         String result = properties.getProperty(value);
 
-        Assert.assertNotNull(
-            result,
-            "The requested configuration " + value + " is not found");
+        if (null == result) {
+            throw new ConfigurationNotFoundException(value);
+        }
+
         return result;
     }
 
