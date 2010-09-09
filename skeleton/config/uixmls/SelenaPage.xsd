@@ -12,6 +12,13 @@
         </xs:choice>
     </xs:complexType>
 
+    <xs:complexType name="GroupType">
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="WebElement" type="WebElementType"/>
+        </xs:choice>
+        <xs:attribute name="name" type="xs:string" use="required"/>
+    </xs:complexType>
+
     <xs:complexType name="WebElementType">
         <xs:choice minOccurs="0" maxOccurs="unbounded">
             <xs:element name="Locators" type="LocatorsType"/>
@@ -22,6 +29,7 @@
     <xs:complexType name="ElementsType">
         <xs:choice minOccurs="0" maxOccurs="unbounded">
             <xs:element name="WebElement" type="WebElementType"/>
+            <xs:element name="Group" type="GroupType"/>
         </xs:choice>
     </xs:complexType>
 
