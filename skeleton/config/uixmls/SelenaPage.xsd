@@ -28,7 +28,6 @@
 
     <xs:complexType name="ElementsType">
         <xs:choice minOccurs="0" maxOccurs="unbounded">
-            <xs:element name="WebElement" type="WebElementType"/>
             <xs:element name="Group" type="GroupType"/>
         </xs:choice>
     </xs:complexType>

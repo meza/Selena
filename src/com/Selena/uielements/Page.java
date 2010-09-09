@@ -6,8 +6,10 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import org.simpleframework.xml.Attribute;
+import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
+import org.simpleframework.xml.Transient;
 
 
 /**
@@ -24,7 +26,7 @@ public class Page
      * Elements list.
      */
     @ElementList(name = "Elements")
-    public List<WebElement> elements;
+    public List<Group> groups;
 
     /**
      * The path of the page
@@ -99,11 +101,14 @@ public class Page
     public String getElementLocator(final LocatorTypes locator,
                                     final String elementName)
     {
-        for (WebElement elem : elements)
+        for (Group group : groups)
         {
-            if (elem.name.equals(elementName))
+            for (WebElement elem : group.elements)
             {
-                return getLocator(locator, elem);
+                if (elem.name.equals(elementName))
+                {
+                    return getLocator(locator, elem);
+                }
             }
         }
         return null;
@@ -159,25 +164,28 @@ public class Page
      */
     public String getElementLocator(final String elementName)
     {
-        for (WebElement elem : elements)
+        for (Group group : groups)
         {
-            if (elem.name.equals(elementName))
+            for (WebElement elem : group.elements)
             {
-                ArrayList<String> locators = new ArrayList<String>();
-
-
-                locators.add(getLocator(LocatorTypes.ID, elem));
-                locators.add(getLocator(LocatorTypes.XPATH, elem));
-                locators.add(getLocator(LocatorTypes.NAME, elem));
-                locators.add(getLocator(LocatorTypes.VALUE, elem));
-                locators.add(getLocator(LocatorTypes.LINK, elem));
-                locators.add(getLocator(LocatorTypes.CLASS, elem));
-
-                for (String loc : locators)
+                if (elem.name.equals(elementName))
                 {
-                    if (loc != null)
+                    ArrayList<String> locators = new ArrayList<String>();
+
+
+                    locators.add(getLocator(LocatorTypes.ID, elem));
+                    locators.add(getLocator(LocatorTypes.XPATH, elem));
+                    locators.add(getLocator(LocatorTypes.NAME, elem));
+                    locators.add(getLocator(LocatorTypes.VALUE, elem));
+                    locators.add(getLocator(LocatorTypes.LINK, elem));
+                    locators.add(getLocator(LocatorTypes.CLASS, elem));
+
+                    for (String loc : locators)
                     {
-                        return loc;
+                        if (loc != null)
+                        {
+                            return loc;
+                        }
                     }
                 }
             }

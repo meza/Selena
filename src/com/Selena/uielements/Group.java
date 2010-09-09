@@ -1,7 +1,9 @@
 package com.Selena.uielements;
 
+import java.util.List;
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Element;
+import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
 
 
@@ -11,12 +13,12 @@ import org.simpleframework.xml.Root;
  * @author Brautigam Gergely
  *
  */
-@Root(name = "WebElement")
-public class WebElement
+@Root(name = "Group")
+public class Group
 {
 
-    @Element(name = "Locators")
-    public Locators locators;
+    @ElementList(name = "WebElement", inline=true)
+    public List<WebElement> elements;
 
     /**
      * <WebElement name="xy"/>
