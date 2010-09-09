@@ -15,3 +15,5 @@ Uasge
 *   Set selena.dir property to point to the directory where you've cloned Selena
 *   Issue: ant initProject
 *   You can try to issue an ant command, but the build will fail saying there were no tests.
+
+More info at: http://wiki.github.com/meza/Selena/
