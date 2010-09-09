@@ -19,6 +19,7 @@
     <property name="testng.dir"             location="${config.dir}/testng"/>
     <property name="src.dir"                location="${basedir}/src" />
     <property name="lib.dir"                location="${selena.dir}/lib"/>
+    <property name="vendor.dir"             location="${selena.dir}/vendor"/>
     <property name="bin.dir"                location="${output.dir}/bin"/>
     <property name="jar.dir"                location="${output.dir}/jar"/>
     <property name="report.dir"             location="${output.dir}/reports"/>
@@ -189,7 +190,7 @@
 
 
     <target name="selenium-start">
-        <java jar="${selena.dir}/lib/selenium-server-standalone-2.0a5.jar"
+        <java jar="${vendor.dir}/selenium-server-standalone-2.0a5.jar"
 		fork="true"
 		spawn="true">
             <arg line="-firefoxProfileTemplate ${firefoxProfileTemplate}"/>
