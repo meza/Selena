@@ -5,7 +5,7 @@ The project aims to collect a set of tools and a set of processes that helps aut
 
 Requirements:
 *   JDK (>=1.6)
-*   ANT (>=1.7.1)
+*   ANT (>=1.8)
 
 Uasge
 *   Clone Selena
