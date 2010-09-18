@@ -14,6 +14,6 @@ public enum LocatorTypes
     /**
      * Locator Types declaring available Locator specifications.
      */
-    ID, XPATH, NAME, CLASS, VALUE, LINK
+    CSS, XPATH, ID, NAME, CLASS, VALUE, LINK, ENGLISH, JAPAN
 }
 

@@ -1,16 +1,10 @@
 package com.Selena.uielements;
 
-import com.Selena.utilities.config.Configuration;
+import com.Selena.Locator;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import org.simpleframework.xml.Attribute;
-import org.simpleframework.xml.Element;
-import org.simpleframework.xml.ElementList;
-import org.simpleframework.xml.Root;
-import org.simpleframework.xml.Transient;
-
 
 /**
  * The root object for the UIElement xml files.
@@ -18,73 +12,84 @@ import org.simpleframework.xml.Transient;
  * @author Brautigam Gergely
  *
  */
-@Root
-public class Page
-{
+public class Page {
 
     /**
-     * Elements list.
+     * Selenium Base URL.
      */
-    @ElementList(name = "Elements")
-    public List<Group> groups;
-
+    private String seleniumBaseUrl;
     /**
-     * The path of the page
+     * The path of the page.
      */
-    @Attribute(name = "path", empty = "/", required = false)
     String path;
-
     /**
-     * The path of the page
+     * The path of the page.
      */
-    @Attribute(name = "url", required = false)
     String url;
 
     /**
-     * Schema location
+     * The WebElement objects that are on the Page.
      */
-    @Attribute
-    String noNamespaceSchemaLocation;
+    private ArrayList<WebElement> elements = new ArrayList<WebElement>();
 
 
     /**
      * Get a full url put together by the baseUrl and the path of the page
-     * If no path or url is given at the page element, the Configuration's
-     * baseUrl will be used
-     * 
-     * @return
+     * If no path or url is given at the page element, the SelenaConfiguration's
+     * baseUrl will be used.
+     *
+     * @return URL
      */
-    public URL getUrl()
-    {
+    public URL getUrl() {
         String baseUrl = getBaseUrl();
-        try
-        {
+        try {
             return new URL(new URL(baseUrl), normalizePath(path));
-        } catch (MalformedURLException ex)
-        {
+        } catch (MalformedURLException ex) {
             throw new com.Selena.uielements.MalformedURLException(
-                baseUrl, path, ex.getMessage());
+                    baseUrl, path, ex.getMessage());
         }
     }
 
-
-    private String getBaseUrl()
-    {
-        if (null == url)
-        {
-            return Configuration.getValue("selenium.baseUrl");
+    /**
+     * Returns the base URL.
+     * @return Base of the URL
+     */
+    private String getBaseUrl() {
+        if (null == url) {
+            return this.seleniumBaseUrl;
         }
         return url;
     }
 
+    /**
+     * Set Selenium Base URL.
+     * @param urlParam Url
+     */
+    public void setSeleniumBaseUrl(final String urlParam) {
+        this.seleniumBaseUrl = urlParam;
+    }
 
-    private String normalizePath(String uriToNormalize)
-    {
-        while (uriToNormalize.startsWith("/"))
-        {
-            uriToNormalize = uriToNormalize.replaceFirst("/", "");
+    /**
+     * Normalizes a Path.
+     * @param uriToNormalize The URL to normalize.
+     * @return Return the URL in a normalized format.
+     */
+    private String normalizePath(final String uriToNormalize) {
+
+        String theNormalizedURI = "";
+        while (uriToNormalize.startsWith("/")) {
+            theNormalizedURI = uriToNormalize.replaceFirst("/", "");
         }
-        return uriToNormalize;
+        return theNormalizedURI;
+    }
+
+
+    /**
+     * Adds a WebElement to the Page.
+     * @param elem The WebElement to add
+     */
+    public void addElement(final WebElement elem) {
+        this.elements.add(elem);
     }
 
 
@@ -99,57 +104,86 @@ public class Page
      * @return A string containing the locator searched for
      */
     public String getElementLocator(final LocatorTypes locator,
-                                    final String elementName)
-    {
-        for (Group group : groups)
-        {
-            for (WebElement elem : group.elements)
-            {
-                if (elem.name.equals(elementName))
-                {
-                    return getLocator(locator, elem);
+            final String elementName) {
+        for (WebElement elem : elements) {
+            if (elem.getName().equals(elementName)) {
+                switch (locator) {
+                    case CLASS:
+                        return getLocator("class", elem);
+                    case CSS:
+                        return getLocator("css", elem);
+                    case ENGLISH:
+                        return getLocator("english", elem);
+                    case ID:
+                        return getLocator("id", elem);
+                    case JAPAN:
+                        return getLocator("japan", elem);
+                    case LINK:
+                        return getLocator("link", elem);
+                    case NAME:
+                        return getLocator("name", elem);
+                    case VALUE:
+                        return getLocator("value", elem);
+                    case XPATH:
+                        return getLocator("xpath", elem);
+                    default:
+                        return getLocator("text", elem);
                 }
             }
         }
         return null;
     }
 
-
     /**
-     * Fetch a locator based on the locator type
+     * Fetch a locator based on the locator type.
      *
      * @param locator The locator to fetch
      * @param elem    The element to fetch from
      *
-     * @return
+     * @return Locator.
      */
-    private String getLocator(final LocatorTypes locator, WebElement elem)
-    {
-        switch (locator)
-        {
-            case ID:
-                return elem.locators.id;
-            case NAME:
-                return elem.locators.name;
-            case XPATH:
-                return elem.locators.xpath;
-            case CLASS:
-                if (null == elem.locators.className)
-                {
-                    return null;
+    private String getLocator(
+            final String locator,
+            final WebElement elem) {
+        List<Locator> locators = elem.getLocators();
+
+        int css = -1;
+        int xpath = -1;
+        int id = -1;
+        int index = 0;
+        for (Locator elemLoc : locators) {
+            if (elemLoc.getType().equals("css")) {
+                css = index;
+            }
+            if (elemLoc.getType().equals("xpath")) {
+                xpath = index;
+            }
+            if (elemLoc.getType().equals("id")) {
+                id = index;
+            }
+            if(!locator.isEmpty()) {
+                if (elemLoc.getType().equals(locator)) {
+                    return elemLoc.getValue();
                 }
-                return "class=" + elem.locators.className;
-            case VALUE:
-                return elem.locators.value;
-            case LINK:
-                if (null == elem.locators.link)
-                {
-                    return null;
-                }
-                return "link=" + elem.locators.link;
-            default:
-                return null;
+            }
+            index++;
         }
+
+        if (-1 < css) {
+            return locators.get(css).getValue();
+        }
+        if (-1 < id) {
+            return locators.get(id).getValue();
+        }
+        if (-1 < xpath) {
+            return locators.get(xpath).getValue();
+        }
+
+        if (locators.size() > 0) {
+            return locators.get(0).getValue();
+        }
+
+        throw new LocatorNotFoundException(elem.getName(), locator);
     }
 
 
@@ -162,38 +196,14 @@ public class Page
      *            find
      * @return A string containing the locator searched for
      */
-    public String getElementLocator(final String elementName)
-    {
-        for (Group group : groups)
-        {
-            for (WebElement elem : group.elements)
-            {
-                if (elem.name.equals(elementName))
-                {
-                    ArrayList<String> locators = new ArrayList<String>();
-
-
-                    locators.add(getLocator(LocatorTypes.ID, elem));
-                    locators.add(getLocator(LocatorTypes.XPATH, elem));
-                    locators.add(getLocator(LocatorTypes.NAME, elem));
-                    locators.add(getLocator(LocatorTypes.VALUE, elem));
-                    locators.add(getLocator(LocatorTypes.LINK, elem));
-                    locators.add(getLocator(LocatorTypes.CLASS, elem));
-
-                    for (String loc : locators)
-                    {
-                        if (loc != null)
-                        {
-                            return loc;
-                        }
-                    }
-                }
+    public String getElementLocator(final String elementName) {
+        for (WebElement elem : this.elements) {
+            if (elem.getName().equals(elementName)) {
+                return this.getLocator("", elem);
             }
         }
 
-        return null;
+        throw new LocatorNotFoundException(elementName);
     }
 
-
 }
-

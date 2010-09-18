@@ -3,12 +3,14 @@
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
     <xs:complexType name="LocatorsType">
         <xs:choice minOccurs="1" maxOccurs="unbounded">
+    	    <xs:element name="css" type="xs:string"/>
             <xs:element name="class" type="xs:string"/>
             <xs:element name="id"    type="xs:string"/>
             <xs:element name="link"  type="xs:string"/>
             <xs:element name="name"  type="xs:string"/>
             <xs:element name="value" type="xs:string"/>
             <xs:element name="xpath" type="xs:string"/>
+            <xs:any minOccurs="0" processContents="skip"/>
         </xs:choice>
     </xs:complexType>
 
@@ -34,7 +36,7 @@
 
     <xs:element name="Page">
         <xs:complexType>
-            <xs:choice minOccurs="0" maxOccurs="unbounded">
+            <xs:choice minOccurs="0" maxOccurs="1">
                 <xs:element name="Elements" type="ElementsType"/>
             </xs:choice>
             <xs:attribute name="url" type="xs:string" use="optional"/>

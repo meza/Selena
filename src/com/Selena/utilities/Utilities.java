@@ -1,46 +1,31 @@
 package com.Selena.utilities;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
+import com.Selena.Configuration;
+import com.Selena.Utils;
 import java.io.IOException;
-import java.io.StringWriter;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Random;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-
 import org.testng.Assert;
 import org.testng.Reporter;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Text;
 
-import com.thoughtworks.selenium.Selenium;
-import com.thoughtworks.selenium.Wait;
 import com.Selena.uielements.LocatorTypes;
 import com.Selena.uielements.Page;
+import com.thoughtworks.selenium.Selenium;
+import com.thoughtworks.selenium.Wait;
 
 
 /**
  *
  * @author Brautigam Gergely
  *
- * @todo check file
+ *
  *
  */
-public final class Utilities
+public final class Utilities implements Utils
 {
-
     /**
      * A utility that waits for a specific url to appear in the address bar.
      * Requires current selenium object to work with.
@@ -52,7 +37,7 @@ public final class Utilities
      * @param timeout
      *            The maximum amount of time to wait in milliseconds.
      */
-    public static void waitForPage(final Selenium selenium,
+    public void waitForPage(final Selenium selenium,
                                    final String urlToAppear,
                                    final String timeout)
     {
@@ -71,6 +56,8 @@ public final class Utilities
     }
 
 
+
+
     /**
      * A utility that waits for a specific element to appear on a given page.
      * Requires current selenium object to work with.
@@ -82,23 +69,19 @@ public final class Utilities
      * @param timeout
      *            The maximum amount of time to wait in milliseconds.
      */
-    public static void waitForElement(final Selenium selenium,
+    public void waitForElement(final Selenium selenium,
                                       final String locator, final int timeout)
     {
         Reporter.log("Waiting for element '" + locator + "' to appear.");
         new Wait()
         {
-
             public boolean until()
             {
                 return selenium.isElementPresent(locator);
             }
-
-
         }.wait("The element '" + locator + "' did not appear  within "
                    + timeout + " ms.", timeout);
     }
-
 
     /**
      * A utility that waits for a specific element to disappear on a given page.
@@ -111,23 +94,20 @@ public final class Utilities
      * @param timeout
      *            The maximum amount of time to wait in milliseconds.
      */
-    public static void waitForNotPresent(final Selenium selenium,
-                                         final String locator, final int timeout)
+    public void waitForNotPresent(final Selenium selenium,
+                                         final String locator,
+                                         final int timeout)
     {
         Reporter.log("Waiting for element '" + locator + "' to disappear.");
         new Wait()
         {
-
             public boolean until()
             {
                 return !selenium.isElementPresent(locator);
             }
-
-
         }.wait("The element '" + locator + "' did not disappear within "
                    + timeout + " ms.", timeout);
     }
-
 
     /**
      * A utility that waits for a specific element to get visible
@@ -140,23 +120,19 @@ public final class Utilities
      * @param timeout
      *            The maximum amount of time to wait in milliseconds.
      */
-    public static void waitForVisible(final Selenium selenium,
+    public void waitForVisible(final Selenium selenium,
                                       final String locator, final int timeout)
     {
         Reporter.log("Waiting for element '" + locator + "' to be visible.");
         new Wait()
         {
-
             public boolean until()
             {
                 return selenium.isVisible(locator);
             }
-
-
         }.wait("The element '" + locator + "' did not become visible within "
                    + timeout + " ms.", timeout);
     }
-
 
     /**
      * A utility that waits for a specific element to lose visibility
@@ -169,23 +145,20 @@ public final class Utilities
      * @param timeout
      *            The maximum amount of time to wait in milliseconds.
      */
-    public static void waitForNotVisible(final Selenium selenium,
-                                         final String locator, final int timeout)
+    public void waitForNotVisible(final Selenium selenium,
+                                         final String locator,
+                                         final int timeout)
     {
         Reporter.log("Waiting for element '" + locator + "' to fade away.");
         new Wait()
         {
-
             public boolean until()
             {
                 return !selenium.isVisible(locator);
             }
-
-
         }.wait("The element '" + locator + "' did not fade away within "
                    + timeout + " ms.", timeout);
     }
-
 
     /**
      * A utility that waits for a specific text to appear on a given page.
@@ -199,24 +172,20 @@ public final class Utilities
      *            The maximum amount of time to wait in milliseconds.
      *
      */
-    public static void waitForTextToAppear(final Selenium selenium,
+    public void waitForTextToAppear(final Selenium selenium,
                                            final String textToAppear,
                                            final long timeout)
     {
         Reporter.log("Waiting '" + textToAppear + "' text to appear.");
         new Wait()
         {
-
             public boolean until()
             {
                 return selenium.isTextPresent(textToAppear);
             }
-
-
         }.wait("'" + textToAppear + "' text did not appear within " + timeout
                    + " ms.", timeout);
     }
-
 
     /**
      * A utility that waits for a specific element's text field to change its
@@ -229,7 +198,7 @@ public final class Utilities
      * @param timeout
      *            The maximum amount of time to wait in milliseconds.
      */
-    public static void waitForTextToChange(final Selenium selenium,
+    public void waitForTextToChange(final Selenium selenium,
                                            final String locator,
                                            final int timeout)
     {
@@ -241,17 +210,13 @@ public final class Utilities
         Reporter.log("Waiting for '" + oldText + "' to change.");
         new Wait()
         {
-
             public boolean until()
             {
                 return oldText.equals(selenium.getText(locator));
             }
-
-
         }.wait("'" + oldText + "' text located at '" + locator
                    + "' did not change within " + timeout + " ms.", timeout);
     }
-
 
     /**
      * A utility that waits for a specific element's attribute to change.
@@ -270,7 +235,7 @@ public final class Utilities
      * @param timeout
      *            The maximum amount of time to wait in milliseconds.
      */
-    public static void waitForAttributeToChange(final Selenium selenium,
+    public void waitForAttributeToChange(final Selenium selenium,
                                                 final String locator,
                                                 final String attribute,
                                                 final int timeout)
@@ -300,7 +265,6 @@ public final class Utilities
                      + oldAttribute + "' to something else.");
         new Wait()
         {
-
             public boolean until()
             {
                 Assert.assertTrue(selenium.isElementPresent(locator));
@@ -314,13 +278,50 @@ public final class Utilities
                     return !oldAttribute.equals("");
                 }
             }
-
-
         }.wait("'" + oldAttribute + "', the value of the '" + attribute
                    + "' attribute in the element '" + locator
                    + "' did not change within " + timeout + " ms.", timeout);
     }
 
+    /**
+     * A utility that waits for a specific element's attribute to become a
+     * specified value. Also works with "" content to appear.
+     * Works only with XPATH locators.
+     * Requires current selenium object to work with.
+     *
+     * @param selenium
+     *            The selenium instances currently in work.
+     * @param locator
+     *            The locator of the element that may has an attribute. (e.g.
+     *            'userName@class' or '//input[@name='q']')
+     * @param attribute
+     *            The name of the attribute beginning with an '@' sign. (e.g.
+     *            '@value' or '@class')
+     * @param attributeValue
+     *            The attribute value that one should wait for
+     * @param timeout
+     *            The maximum amount of time to wait in milliseconds.
+     */
+    public void waitForAttributeValue(final Selenium selenium,
+            final String locator, final String attribute,
+            final String attributeValue, final int timeout)
+        {
+        Reporter.log("Waiting for element '" + locator
+                + "' to have an '" + attribute + "' attribute with '"
+                + attributeValue + "' value.");
+
+        waitForElement(selenium, locator + "/" + attribute, timeout);
+        new Wait()
+        {
+            public boolean until()
+            {
+                return attributeValue.equals(getAttribute(selenium, locator,
+                        attribute));
+            }
+        }.wait("The value of the '" + locator + "' element's '" + attribute
+                + "' attribute did not became '" + attributeValue + "' within "
+                + timeout + " ms.", timeout);
+    }
 
     /**
      * A utility that reads a specific element's attribute. Gives "" if the
@@ -339,7 +340,7 @@ public final class Utilities
      *            '@value' or '@class')
      * @return the value of the located element's attribute.
      */
-    public static String getAttribute(final Selenium selenium,
+    public String getAttribute(final Selenium selenium,
                                       final String locator,
                                       final String attribute)
     {
@@ -355,7 +356,6 @@ public final class Utilities
         }
     }
 
-
     /**
      * A utility that captures page screenshot from current browser page. The
      * method captures images to the 'execution dir'//output directory
@@ -367,58 +367,69 @@ public final class Utilities
      * @param filename
      *            The full name of the captured image (.png extension required).
      */
-    public static void captureScreenshot(final Selenium selenium,
+    public void captureScreenshot(final Selenium selenium,
                                          final String filename)
+    {
+
+        String savePath = getImageSavePath(filename);
+        Reporter.log("Filename will be: " + filename);
+        Reporter.log("Save Path: " + savePath);
+
+        if (isFirefox(selenium))
+        {
+            try
+            {
+                selenium.captureEntirePageScreenshot(savePath, "");
+            } catch (Exception e)
+            {
+                Reporter.log("Couldn't use EntirePageScreenshot"
+                             + " -> using simple captureScreenshot.");
+                selenium.captureScreenshot(savePath);
+            }
+        } else
+        {
+            selenium.captureScreenshot(savePath);
+        }
+
+    }
+
+    /**
+     * Determines wether the browser is firefox or not.
+     *
+     * @param selenium The selenium instance to use
+     *
+     * @return true on firefox
+     */
+    private boolean isFirefox(final Selenium selenium)
     {
         String javaScriptUserAgent = selenium.getEval(
             "selenium.browserbot.getCurrentWindow().navigator.userAgent");
+        return javaScriptUserAgent.contains("Firefox");
+    }
 
-        Calendar now = Calendar.getInstance();
-
+    /**
+     * Get the full path of the image.
+     *
+     * @param filename The filename to save
+     *
+     * @return String the full path
+     */
+    private String getImageSavePath(final String filename)
+    {
         String fileNameWithoutExtension =
                filename.substring(0, filename.indexOf('.'));
         String extension =
                filename.substring(filename.indexOf('.'), filename.length());
 
-        String fileNameWithTimeStamp = String.format(
-            "%s%d%d%d",
-            fileNameWithoutExtension,
-            now.get(Calendar.DAY_OF_MONTH),
-            now.get(Calendar.MONTH) + 1,
-            now.get(Calendar.YEAR));
+        String fileNameWithTimeStamp =
+            fileNameWithoutExtension + now("_mmHHddMMyy") + extension;
 
         fileNameWithTimeStamp = fileNameWithTimeStamp + extension;
 
-        Reporter.log("Filename will be: " + fileNameWithTimeStamp);
+        String imageBaseDir = getConfig().getValue("image.dir");
 
-        String runningDir = System.getProperty("user.dir");
-
-        Reporter.log("The running directory is: " + runningDir);
-
-        String savePath = "output/imgs/" + fileNameWithTimeStamp;
-
-        Reporter.log("Save Path: " + savePath);
-
-
-        if (javaScriptUserAgent.contains("Firefox"))
-        {
-            try
-            {
-                selenium.captureEntirePageScreenshot(runningDir + "/"
-                                                     + savePath, "");
-            } catch (Exception e)
-            {
-                Reporter.log("Couldn't use EntirePageScreenshot"
-                             + " -> using simple captureScreenshot.");
-                selenium.captureScreenshot(runningDir + "\\" + savePath);
-            }
-        } else
-        {
-            selenium.captureScreenshot(runningDir + "\\" + savePath);
-        }
-
+        return imageBaseDir+"/"+fileNameWithTimeStamp;
     }
-
 
     /**
      * A utility that waits for an ajax request to complete.
@@ -429,14 +440,13 @@ public final class Utilities
      * @param timeout
      *            The maximum amount of time to wait in milliseconds.
      */
-    public static void waitForAjaxRequestDone(final Selenium selenium,
+    public void waitForAjaxRequestDone(final Selenium selenium,
                                               final String timeout)
     {
         selenium.waitForCondition(
             "selenium.browserbot.getCurrentWindow().jQuery.active == 0",
             timeout);
     }
-
 
     /**
      * A utility that waits for an ajax request to start.
@@ -447,14 +457,13 @@ public final class Utilities
      * @param timeout
      *            The maximum amount of time to wait in milliseconds.
      */
-    public static void waitForAjaxRequestStart(final Selenium selenium,
+    public void waitForAjaxRequestStart(final Selenium selenium,
                                                final String timeout)
     {
         selenium.waitForCondition(
             "selenium.browserbot.getCurrentWindow().jQuery.active != 0",
             timeout);
     }
-
 
     /**
      * A utility that waits for all ajax request to complete.
@@ -467,7 +476,7 @@ public final class Utilities
      * @param timeout
      *            The maximum amount of time to wait in milliseconds.
      */
-    public static void waitForAllAjaxRequestsDone(final Selenium selenium,
+    public void waitForAllAjaxRequestsDone(final Selenium selenium,
                                                   final String timeout)
     {
         /**
@@ -485,14 +494,13 @@ public final class Utilities
         }
     }
 
-
     /**
      * A utility that waits for a specific amount of time.
      *
      * @param timeToWait
      *            Time to wait in ms.
      */
-    public static void waitTime(final int timeToWait)
+    public void waitTime(final int timeToWait)
     {
         try
         {
@@ -503,7 +511,6 @@ public final class Utilities
             e.printStackTrace();
         }
     }
-
 
     /**
      * A utility that merges two ArrayLists (of type String) and avoiding
@@ -516,7 +523,7 @@ public final class Utilities
      *            the list that will contain all elements.
      * @return intoThis after the merge is done or Assert failure occurs.
      */
-    public static ArrayList<String> mergeArrayListsWithNoDuplicate(
+    public ArrayList<String> mergeArrayListsWithNoDuplicate(
         final ArrayList<String> mergeThis,
         final ArrayList<String> intoThis)
     {
@@ -538,7 +545,6 @@ public final class Utilities
         return intoThis;
     }
 
-
     /**
      * A utility that generates random String with a given length of characters.
      * duplicate entries. The random string lowercase characters and numbers.
@@ -547,13 +553,13 @@ public final class Utilities
      *            the generated String's length
      * @return the generated random String
      */
-    public static String generateRandomString(final int length)
+    public String generateRandomString(final int length)
     {
         /**
          * the list of characters that the random string can contains
          */
         final String validCharacters =
-                     "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+             "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
         /**
          * random generator to generate random indexes in a range
          */
@@ -571,11 +577,11 @@ public final class Utilities
         {
             randIndex = randomGenerator.nextInt(validCharacters.length());
             randomString = randomString
-                           + validCharacters.substring(randIndex, randIndex + 1);
+                           + validCharacters.substring(randIndex,
+                                   randIndex + 1);
         }
         return randomString;
     }
-
 
     /**
      * Checks whether an element text is written in the appropriate language.
@@ -589,10 +595,11 @@ public final class Utilities
      * @param langLocatorType
      *      element locator type addressing the checked language.
      */
-    public static void checkElementTextLanguage(final Selenium selenium,
-                                                final String elementName,
-                                                final Page elementContainer,
-                                                final LocatorTypes langLocatorType)
+    public void checkElementTextLanguage(
+            final Selenium selenium,
+            final String elementName,
+            final Page elementContainer,
+            final LocatorTypes langLocatorType)
     {
         /**
          * Wait for element default timeout.
@@ -619,11 +626,11 @@ public final class Utilities
          * The actual text of the given element on the page.
          */
         final String actualText = selenium.getText(elementLocator);
-        Assert.assertTrue(actualText.equals(expectedText), "'" + elementLocator
-                                                           + "' text must be '" + expectedText + "' but it is '"
-                                                           + actualText + "'");
+        Assert.assertTrue(actualText.equals(expectedText),
+                "'" + elementLocator
+                + "' text must be '" + expectedText + "' but it is '"
+                + actualText + "'");
     }
-
 
     /**
      * Checks whether an element value is written in the appropriate language.
@@ -637,10 +644,11 @@ public final class Utilities
      * @param langLocatorType
      *      element locator type addressing the checked language.
      */
-    public static void checkElementValueLanguage(final Selenium selenium,
-                                                 final String elementName,
-                                                 final Page elementContainer,
-                                                 final LocatorTypes langLocatorType)
+    public void checkElementValueLanguage(
+            final Selenium selenium,
+            final String elementName,
+            final Page elementContainer,
+            final LocatorTypes langLocatorType)
     {
         /**
          * Wait for element default timeout.
@@ -677,125 +685,230 @@ public final class Utilities
 
 
     /**
-     * Save the result of the test into an xml file.
+     * Returns the integer value of the elements' left border position.
      *
-     * @param id ID of the test
-     * @param steps Steps that passed
-     * @param xlsUrl The url to the xls file that contains the covered test
+     * @param selenium
+     *            The selenium instances currently in work.
+     * @param elementLocator
+     *            the locator of the element.
+     * @return the elements' left side pixel position
      */
-    public static void saveResult(
-        final String id,
-        final int steps,
-        final String xlsUrl)
+    public int getLeftPosition(final Selenium selenium,
+            final String elementLocator)
     {
+       return selenium.getElementPositionLeft(elementLocator).intValue();
+    }
 
-        // Set output directory.
-        String outputDir = "output/xmlresults/";
+    /**
+     * Returns the integer value of the elements' right border position.
+     *
+     * @param selenium
+     *            The selenium instances currently in work.
+     * @param elementLocator
+     *            the locator of the element.
+     * @return the elements' right side pixel position
+     */
+    public int getRightPosition(final Selenium selenium,
+            final String elementLocator)
+    {
+        return selenium.getElementPositionLeft(elementLocator).intValue()
+                + selenium.getElementWidth(elementLocator).intValue();
+    }
+
+    /**
+     * Returns the integer value of the elements' upper border position.
+     *
+     * @param selenium
+     *            The selenium instances currently in work.
+     * @param elementLocator
+     *            the locator of the element.
+     * @return the elements' top side pixel position
+     */
+    public int getTopPosition(final Selenium selenium,
+            final String elementLocator)
+    {
+        return selenium.getElementPositionTop(elementLocator).intValue();
+    }
+
+    /**
+     * Returns the integer value of the elements' lower border position.
+     *
+     * @param selenium
+     *            The selenium instances currently in work.
+     * @param elementLocator
+     *            the locator of the element.
+     * @return the elements' bottom side pixel position
+     */
+    public int getBottomPosition(final Selenium selenium,
+            final String elementLocator)
+    {
+        return selenium.getElementPositionTop(elementLocator).intValue()
+                + selenium.getElementHeight(elementLocator).intValue();
+    }
+
+    /**
+     * Returns the integer value of the elements' vertical (|) middle position.
+     *
+     * @param selenium
+     *            The selenium instances currently in work.
+     * @param elementLocator
+     *            the locator of the element.
+     * @return the elements' center pixel position in the vertical (|) direction
+     */
+    public int getVerticalMiddlePosition(final Selenium selenium,
+            final String elementLocator)
+    {
+        return Math.round((getBottomPosition(selenium, elementLocator) +
+                            getTopPosition(selenium, elementLocator)) / 2);
+    }
+
+    /**
+     * Returns the integer value of the elements' horizontal (-) middle
+     * position.
+     *
+     * @param selenium
+     *            The selenium instances currently in work.
+     * @param elementLocator
+     *            the locator of the element.
+     * @return the elements' center pixel position in the horizontal (-)
+     *         direction
+     */
+    public int getHorizontalMiddlePosition(final Selenium selenium,
+            final String elementLocator)
+    {
+        return Math.round((getLeftPosition(selenium, elementLocator) +
+                            getRightPosition(selenium, elementLocator)) / 2);
+    }
+
+    /**
+     * Checks the relative layout between two UI elements. The the right element
+     * left border must be on the right of the left element's right border.
+     *
+     * @param selenium
+     *            The selenium instances currently in work.
+     * @param leftElementLocator
+     *            the left element locator.
+     * @param rightElementLocator
+     *            the right element locator.
+     */
+    public void checkLayoutPositionOnTheRight(final Selenium selenium,
+            final String leftElementLocator, final String rightElementLocator)
+    {
+        Assert.assertTrue(getRightPosition(selenium, leftElementLocator) <=
+                            getLeftPosition(selenium, rightElementLocator),
+                        "Left to right layout check fail. (left element: '"
+                                + leftElementLocator + "', right element: '"
+                                + rightElementLocator + "')");
+    }
+
+    /**
+     * Checks the relative layout between two UI elements. The the upper element
+     * lower border must be over of the lower element's upper border.
+     *
+     * @param selenium
+     *            The selenium instances currently in work.
+     * @param upperElementLocator
+     *            the lower element locator.
+     * @param lowerElementLocator
+     *            the right element locator.
+     */
+    public void checkLayoutPositionUnder(final Selenium selenium,
+            final String upperElementLocator, final String lowerElementLocator)
+    {
+        Assert.assertTrue(getBottomPosition(selenium, upperElementLocator) <=
+                            getTopPosition(selenium, lowerElementLocator),
+                        "Upper under lower layout check fail. (upper element: '"
+                                + upperElementLocator + "', lower element: '"
+                                + lowerElementLocator + "')");
+    }
+
+    /**
+     * Checks the relative layout between two UI elements. The the outer
+     * elements' borders must cover the inner elements' borders.
+     *
+     * @param selenium
+     *            The selenium instances currently in work.
+     * @param outerElementLocator
+     *            the outer element locator.
+     * @param innerElementLocator
+     *            the inner element locator.
+     */
+    public void checkLayoutPositionCover(final Selenium selenium,
+            final String outerElementLocator, final String innerElementLocator)
+    {
+        Assert.assertTrue(getBottomPosition(selenium, outerElementLocator) >=
+                          getBottomPosition(selenium, innerElementLocator) &
+                           getRightPosition(selenium, outerElementLocator) >=
+                           getRightPosition(selenium, innerElementLocator) &
+                            getTopPosition(selenium, outerElementLocator) <=
+                            getTopPosition(selenium, innerElementLocator) &
+                             getLeftPosition(selenium, outerElementLocator) <=
+                             getLeftPosition(selenium, innerElementLocator),
+                      "Outer covers inside layout check fail. (outer element: '"
+                                + outerElementLocator + "', inner element: '"
+                                + innerElementLocator + "')");
+    }
+
+    /**
+     * Gives the actual time in the specified format by using SimpleDateFormat
+     * and Calendar.
+     *
+     * @param dateFormat
+     *            the format string of the returned time text.
+     *            (e.g. "yyyy-MM-dd HH:mm:ss")
+     *
+     * @return The current date formatted according to the given dateFormat.
+     */
+    public String now(final String dateFormat)
+    {
+        SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
         Calendar cal = Calendar.getInstance();
+        return sdf.format(cal.getTime());
+    }
 
-        int day = cal.get(Calendar.DAY_OF_MONTH);
-        int month = cal.get(Calendar.MONTH) + 1;
-        int year = cal.get(Calendar.YEAR);
+    /**
+     * Kill a running process.
+     * @param processName Name of the process to kill.
+     */
+    public void killProcess(final String processName)
+    {
+        Reporter.log("Detecting operating system...");
+        String opSystem = System.getProperty("os.name");
+        Reporter.log("Op system is: " + opSystem);
 
-        String fileName = id + "" + day + "" + month + "" + year;
-
-        String runningDir = System.getProperty("user.dir");
-
-        // Create file name with date stamp
-        String path = runningDir + "/" + outputDir + "/" + fileName + ".xml";
-
-        DocumentBuilderFactory dbfac = DocumentBuilderFactory.newInstance();
-        DocumentBuilder docBuilder = null;
-
-        try
+        if (opSystem.toLowerCase().contains("win"))
         {
-            docBuilder = dbfac.newDocumentBuilder();
-        } catch (ParserConfigurationException e)
-        {
-            e.printStackTrace();
-        }
-
-        Document doc = docBuilder.newDocument();
-
-        //document root element
-        Element resultRoot = doc.createElement("result");
-        doc.appendChild(resultRoot);
-
-        //test element
-        Element testChild = doc.createElement("test");
-        resultRoot.appendChild(testChild);
-
-        //the three inner elements
-        Element idChild = doc.createElement("id");
-        Element urlChild = doc.createElement("url");
-        Element stepsChild = doc.createElement("steps");
-
-        testChild.appendChild(idChild);
-        testChild.appendChild(urlChild);
-        testChild.appendChild(stepsChild);
-
-
-        Text idText = doc.createTextNode(id);
-        Text urlText = doc.createTextNode(xlsUrl);
-        Text stepsText = doc.createTextNode(String.valueOf(steps));
-
-        //Add the text to the children
-        idChild.appendChild(idText);
-        urlChild.appendChild(urlText);
-        stepsChild.appendChild(stepsText);
-
-        //create the transformer factory
-        TransformerFactory transfac = TransformerFactory.newInstance();
-        Transformer trans = null;
-
-        try
-        {
-            trans = transfac.newTransformer();
-        } catch (TransformerConfigurationException e2)
-        {
-            e2.printStackTrace();
-        }
-
-        trans.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-        trans.setOutputProperty(OutputKeys.INDENT, "yes");
-
-        //create string from xml tree
-        StringWriter sw = new StringWriter();
-        StreamResult result = new StreamResult(sw);
-        DOMSource source = new DOMSource(doc);
-        try
-        {
-            trans.transform(source, result);
-        } catch (TransformerException e1)
-        {
-            e1.printStackTrace();
-        }
-
-        String xmlString = sw.toString();
-
-        try
-        {
-            // Create file
-            FileWriter fstream = new FileWriter(path, false);
-            BufferedWriter out = new BufferedWriter(fstream);
-            out.write(xmlString);
-            //Close the output stream
-            out.close();
-
-        } catch (IOException ie)
-        {//Catch exception if any
-            System.err.println("Error by creating file: " + ie.getMessage());
+            Reporter.log("Executing win kill...");
+            try
+            {
+                Runtime.getRuntime().exec("pskill " + processName);
+            } catch (IOException e)
+            {
+                e.printStackTrace();
+            }
         }
     }
 
+    /**
+     * Configuration.
+     */
+    private Configuration config;
 
     /**
      * Private constructor for Utilities class.
+     * @param configParam Configuration
      */
-    private Utilities()
+    public Utilities(final Configuration configParam)
     {
+        this.config = configParam;
     }
 
-
+    /**
+     * Get Configuration.
+     * @return Configuration
+     */
+    protected Configuration getConfig()
+    {
+        return this.config;
+    }
 }
-
