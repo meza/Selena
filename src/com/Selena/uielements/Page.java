@@ -42,6 +42,7 @@ public class Page {
      */
     public URL getUrl() {
         String baseUrl = getBaseUrl();
+        System.out.println(String.format("Base path is: %s",normalizePath(path)));
         try {
             return new URL(new URL(baseUrl), normalizePath(path));
         } catch (MalformedURLException ex) {
@@ -55,7 +56,7 @@ public class Page {
      * @return Base of the URL
      */
     private String getBaseUrl() {
-        if (null == url) {
+        if (url.isEmpty()) {
             return this.seleniumBaseUrl;
         }
         return url;
@@ -76,8 +77,8 @@ public class Page {
      */
     private String normalizePath(final String uriToNormalize) {
 
-        String theNormalizedURI = "";
-        while (uriToNormalize.startsWith("/")) {
+        String theNormalizedURI = uriToNormalize;
+        while (theNormalizedURI.startsWith("/")) {
             theNormalizedURI = uriToNormalize.replaceFirst("/", "");
         }
         return theNormalizedURI;
@@ -92,47 +93,6 @@ public class Page {
         this.elements.add(elem);
     }
 
-
-    /**
-     * Get the Locator of a specific element.
-     *
-     * @param locator
-     *            The Type of the Locator like: id, name, value, xpath
-     * @param elementName
-     *            The Name of the element in the XML file that you are trying to
-     *            find
-     * @return A string containing the locator searched for
-     */
-    public String getElementLocator(final LocatorTypes locator,
-            final String elementName) {
-        for (WebElement elem : elements) {
-            if (elem.getName().equals(elementName)) {
-                switch (locator) {
-                    case CLASS:
-                        return getLocator("class", elem);
-                    case CSS:
-                        return getLocator("css", elem);
-                    case ENGLISH:
-                        return getLocator("english", elem);
-                    case ID:
-                        return getLocator("id", elem);
-                    case JAPAN:
-                        return getLocator("japan", elem);
-                    case LINK:
-                        return getLocator("link", elem);
-                    case NAME:
-                        return getLocator("name", elem);
-                    case VALUE:
-                        return getLocator("value", elem);
-                    case XPATH:
-                        return getLocator("xpath", elem);
-                    default:
-                        return getLocator("text", elem);
-                }
-            }
-        }
-        return null;
-    }
 
     /**
      * Fetch a locator based on the locator type.
