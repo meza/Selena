@@ -21,11 +21,11 @@ public class Page {
     /**
      * The path of the page.
      */
-    String path;
+    public String path;
     /**
      * The path of the page.
      */
-    String url;
+    public String url;
 
     /**
      * The WebElement objects that are on the Page.
@@ -42,9 +42,9 @@ public class Page {
      */
     public URL getUrl() {
         String baseUrl = getBaseUrl();
-        System.out.println(String.format("Base path is: %s",normalizePath(path)));
         try {
-            return new URL(new URL(baseUrl), normalizePath(path));
+            URL aurl = new URL(baseUrl);
+            return new URL(aurl, normalizePath(path));
         } catch (MalformedURLException ex) {
             throw new com.Selena.uielements.MalformedURLException(
                     baseUrl, path, ex.getMessage());
@@ -76,9 +76,11 @@ public class Page {
      * @return Return the URL in a normalized format.
      */
     private String normalizePath(final String uriToNormalize) {
-
+        if (uriToNormalize.isEmpty()) {
+            return "";
+        }
         String theNormalizedURI = uriToNormalize;
-        while (theNormalizedURI.startsWith("/")) {
+        while (uriToNormalize.startsWith("/")) {
             theNormalizedURI = uriToNormalize.replaceFirst("/", "");
         }
         return theNormalizedURI;
@@ -93,6 +95,47 @@ public class Page {
         this.elements.add(elem);
     }
 
+
+    /**
+     * Get the Locator of a specific element.
+     *
+     * @param locator
+     *            The Type of the Locator like: id, name, value, xpath
+     * @param elementName
+     *            The Name of the element in the XML file that you are trying to
+     *            find
+     * @return A string containing the locator searched for
+     */
+    public String getElementLocator(final LocatorTypes locator,
+            final String elementName) {
+        for (WebElement elem : elements) {
+            if (elem.getName().equals(elementName)) {
+                switch (locator) {
+                    case CLASS:
+                        return getLocator("class", elem);
+                    case CSS:
+                        return getLocator("css", elem);
+                    case ENGLISH:
+                        return getLocator("english", elem);
+                    case ID:
+                        return getLocator("id", elem);
+                    case JAPAN:
+                        return getLocator("japan", elem);
+                    case LINK:
+                        return getLocator("link", elem);
+                    case NAME:
+                        return getLocator("name", elem);
+                    case VALUE:
+                        return getLocator("value", elem);
+                    case XPATH:
+                        return getLocator("xpath", elem);
+                    default:
+                        return getLocator("text", elem);
+                }
+            }
+        }
+        return null;
+    }
 
     /**
      * Fetch a locator based on the locator type.
@@ -164,6 +207,15 @@ public class Page {
         }
 
         throw new LocatorNotFoundException(elementName);
+    }
+
+    /**
+     * Returns he path of the page.
+     *
+     * @return String
+     */
+    public String getPath() {
+        return this.path;
     }
 
 }

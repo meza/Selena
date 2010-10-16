@@ -57,6 +57,10 @@ public class SelenaLocatorFactory implements LocatorFactory {
                 return custLoc;
             }
         }
+        String eType = type.toLowerCase();
+        if (eType.equals("value")) {
+            return new EmptyLocator(type, value);
+        }
         return new GenericLocator(type, value);
     }
 }

@@ -188,10 +188,20 @@ public class BasePage
      *
      * @param webPage the URL of the web page to open.
      */
-    protected void openWebPage(final String webPage)
+    public void openWebPage(final String webPage)
     {
         Reporter.log("Opening page: '" + webPage + "'");
         selenium.open(webPage, defaultPageTimeOut);
+        selenium.waitForPageToLoad(defaultPageTimeOut);
+    }
+
+    /**
+     * Refreshes the page and waits for the page to load.
+     */
+    public void refreshPage()
+    {
+        Reporter.log("Reloading page.");
+        selenium.refresh();
         selenium.waitForPageToLoad(defaultPageTimeOut);
     }
 

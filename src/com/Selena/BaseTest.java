@@ -72,10 +72,10 @@ public class BaseTest
     /**
      * Method running before suite. Setting selena configuration and utilities.
      */
-    @BeforeClass
-    public void beforeSuite()
+    @BeforeClass(alwaysRun=true)
+    public void beforeClass()
     {
-		this.setConfig(new SelenaConfiguration());
+        this.setConfig(new SelenaConfiguration());
         this.setUtils(new Utilities(this.getConfig()));
     }
 
@@ -119,7 +119,7 @@ public class BaseTest
      * Performing setup for tests. 1. Setup of selenium 2. Starting selenium 3.
      * Opening the set default page 4. Waiting for the page to load
      */
-    @BeforeMethod
+    @BeforeMethod(alwaysRun=true)
     public void setUp()
     {
         setUpSelenium();
@@ -133,7 +133,7 @@ public class BaseTest
      * Performing a tear down after each test 1. Capturing the last screen for
      * loggin 2. Stoping selenium
      */
-    @AfterMethod
+    @AfterMethod(alwaysRun=true)
     public void tearDown()
     {
         Reporter.log("Closing selenium.");
@@ -165,6 +165,7 @@ public class BaseTest
      */
     protected void setUpSelenium()
     {
+
 		Reporter.log(String.format(
             "Setting up selenium with data:%s, %d, %s, %s", getConfig().
             getValue(ConfigParams.SELENIUMHOST),
@@ -172,6 +173,8 @@ public class BaseTest
             ConfigParams.SELENIUMPORT)),
             getConfig().getValue(ConfigParams.SELENIUMBROWSER),
             getConfig().getValue(ConfigParams.SELENIUMBASEURL)));
+
+
         selenium = new DefaultSelenium(
             getConfig().getValue(ConfigParams.SELENIUMHOST),
             Integer.parseInt(getConfig().getValue(ConfigParams.SELENIUMPORT)),

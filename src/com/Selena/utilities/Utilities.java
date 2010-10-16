@@ -2,6 +2,8 @@ package com.Selena.utilities;
 
 import com.Selena.Configuration;
 import com.Selena.Utils;
+
+import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -27,6 +29,42 @@ import com.thoughtworks.selenium.Wait;
 public final class Utilities implements Utils
 {
     /**
+     * A utility that waits for a new window to open up. Requires current
+     * selenium object to work with.
+     *
+     * @param selenium
+     *            The selenium instances currently in work.
+     * @param actualNumberOfWindows
+     *            the number of windows present before the new window opening
+     *            action was taken (e.g. selenium.getAllWindowNames().length)
+     * @param timeout
+     *            The maximum amount of time to wait in milliseconds.
+     */
+    public void waitForNewWindow(final Selenium selenium,
+            final int actualNumberOfWindows, final String timeout)
+    {
+        Reporter.log("Waiting for a new window to open up (currently "
+                + actualNumberOfWindows + " present).");
+        new Wait()
+        {
+            public boolean until()
+            {
+                return (selenium.getAllWindowNames().length
+                            > actualNumberOfWindows)
+                        || (selenium.getAllWindowIds().length
+                            > actualNumberOfWindows)
+                        || (selenium.getAllWindowTitles().length
+                            > actualNumberOfWindows);
+            }
+        }.wait("No new window opened within " + timeout
+                + " ms. The number of opened widow(s) is "
+                + selenium.getAllWindowNames().length + " (by name) or "
+                + selenium.getAllWindowIds().length + " (by Id) or "
+                + selenium.getAllWindowTitles().length + " (by title).", Integer
+                .parseInt(timeout));
+    }
+
+    /**
      * A utility that waits for a specific url to appear in the address bar.
      * Requires current selenium object to work with.
      *
@@ -44,19 +82,14 @@ public final class Utilities implements Utils
         Reporter.log("Waiting for the page '" + urlToAppear + "' to appear.");
         new Wait()
         {
-
             public boolean until()
             {
                 return urlToAppear.equals(selenium.getLocation());
             }
-
-
         }.wait("The page '" + urlToAppear + "' did not appear  within "
-                   + timeout + " ms.", Integer.parseInt(timeout));
+                + timeout + " ms. The actual url is: '"
+                + selenium.getLocation() + "'.", Integer.parseInt(timeout));
     }
-
-
-
 
     /**
      * A utility that waits for a specific element to appear on a given page.
@@ -375,7 +408,7 @@ public final class Utilities implements Utils
         Reporter.log("Filename will be: " + filename);
         Reporter.log("Save Path: " + savePath);
 
-        if (isFirefox(selenium))
+        if (isFirefox(selenium) || isInternetExplorer(selenium))
         {
             try
             {
@@ -394,7 +427,7 @@ public final class Utilities implements Utils
     }
 
     /**
-     * Determines wether the browser is firefox or not.
+     * Determines weather the browser is firefox or not.
      *
      * @param selenium The selenium instance to use
      *
@@ -405,6 +438,23 @@ public final class Utilities implements Utils
         String javaScriptUserAgent = selenium.getEval(
             "selenium.browserbot.getCurrentWindow().navigator.userAgent");
         return javaScriptUserAgent.contains("Firefox");
+    }
+
+    /**
+     * Determines weather the browser is firefox or not.
+     *
+     * @param selenium
+     *            The selenium instance to use
+     *
+     * @return true on firefox
+     *
+     * */
+    private boolean isInternetExplorer(final Selenium selenium)
+    {
+        String javaScriptUserAgent = selenium.getEval(
+                "selenium.browserbot.getCurrentWindow().navigator.userAgent");
+        Reporter.log("UserAgent: " + javaScriptUserAgent);
+        return javaScriptUserAgent.contains("MSIE");
     }
 
     /**
@@ -424,11 +474,9 @@ public final class Utilities implements Utils
         String fileNameWithTimeStamp =
             fileNameWithoutExtension + now("_mmHHddMMyy") + extension;
 
-        fileNameWithTimeStamp = fileNameWithTimeStamp + extension;
-
         String imageBaseDir = getConfig().getValue("image.dir");
 
-        return imageBaseDir+"/"+fileNameWithTimeStamp;
+        return imageBaseDir+File.separator+fileNameWithTimeStamp;
     }
 
     /**
@@ -581,6 +629,106 @@ public final class Utilities implements Utils
                                    randIndex + 1);
         }
         return randomString;
+    }
+
+    /**
+     * Checks whether an element text is written in the appropriate language.
+     *
+     * @param selenium
+     *            The selenium instances currently in work.
+     * @param elementName
+     *            the name of the element locator.
+     * @param elementContainer
+     *            Page class containing the given element.
+     * @param langLocatorType
+     *      element locator type addressing the checked language.
+     */
+    public void checkElementTextLanguage(
+            final Selenium selenium,
+            final String elementName,
+            final Page elementContainer,
+            final LocatorTypes langLocatorType)
+    {
+        /**
+         * Wait for element default timeout.
+         */
+        final int elementWaitTimeout = 30000;
+
+        /**
+         * The locator string of the element.
+         */
+        final String elementLocator = elementContainer.getElementLocator(
+            elementName);
+
+        /**
+         * The expected text of the given element.
+         */
+        final String expectedText = elementContainer.getElementLocator(
+            langLocatorType, elementName);
+
+        Reporter.log("Checking element '" + elementName + "' text is '"
+                     + expectedText + "'.");
+        waitForElement(selenium, elementLocator, elementWaitTimeout);
+
+        /**
+         * The actual text of the given element on the page.
+         */
+        final String actualText = selenium.getText(elementLocator);
+        Assert.assertTrue(actualText.equals(expectedText),
+                "'" + elementLocator
+                + "' text must be '" + expectedText + "' but it is '"
+                + actualText + "'");
+    }
+
+    /**
+     * Checks whether an element value is written in the appropriate language.
+     *
+     * @param selenium
+     *            The selenium instances currently in work.
+     * @param elementName
+     *            the name of the element locator.
+     * @param elementContainer
+     *            Page class containing the given element.
+     * @param langLocatorType
+     *      element locator type addressing the checked language.
+     */
+    public void checkElementValueLanguage(
+            final Selenium selenium,
+            final String elementName,
+            final Page elementContainer,
+            final LocatorTypes langLocatorType)
+    {
+        /**
+         * Wait for element default timeout.
+         */
+        final int elementWaitTimeout = 30000;
+
+        /**
+         * The locator string of the element.
+         */
+        final String elementLocator = elementContainer.getElementLocator(
+            elementName);
+
+        /**
+         * The expected value of the given element.
+         */
+        final String expectedValue = elementContainer.getElementLocator(
+            langLocatorType, elementName);
+
+        Reporter.log("Checking element '" + elementName + "' value is '"
+                     + expectedValue + "'.");
+        waitForElement(selenium, elementLocator, elementWaitTimeout);
+
+        /**
+         * The actual value of the given element on the page.
+         */
+        final String actualValue = selenium.getAttribute(elementLocator
+                                                         + "@value");
+        Assert.assertTrue(actualValue.equals(expectedValue),
+                          "'"
+                          + elementLocator + "' value must be '" + expectedValue
+                          + "' but it is '" + actualValue + "'");
+
     }
 
 
