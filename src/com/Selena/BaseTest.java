@@ -19,6 +19,7 @@ import org.testng.Reporter;
 import com.Selena.utilities.config.SelenaConfiguration;
 import com.thoughtworks.selenium.DefaultSelenium;
 import com.thoughtworks.selenium.Selenium;
+import com.thoughtworks.selenium.SeleniumException;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
@@ -156,7 +157,11 @@ public class BaseTest
      */
     protected void stopSeleniumServer()
     {
-        server.stop();
+        try {
+            server.stop();
+        } catch (SeleniumException e) {
+            Reporter.log("Exception when closing server.");
+        }
     }
 
 
@@ -166,7 +171,7 @@ public class BaseTest
     protected void setUpSelenium()
     {
 
-		Reporter.log(String.format(
+        Reporter.log(String.format(
             "Setting up selenium with data:%s, %d, %s, %s", getConfig().
             getValue(ConfigParams.SELENIUMHOST),
             Integer.parseInt(getConfig().getValue(
