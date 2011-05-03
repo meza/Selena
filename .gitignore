@@ -2,3 +2,9 @@ build
 Selena.jar
 Selena.properties
 *.class
+/nbproject/
+/manifest.mf
+/nbbuild.xml
+/version
+/lib/nblibraries.properties
+/lib/CopyLibs/
