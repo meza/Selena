@@ -1,7 +1,8 @@
-package com.Selena.utilities;
+package hu.meza.Selena.utilities;
 
-import com.Selena.Configuration;
-import com.Selena.Utils;
+import hu.meza.Selena.Configuration;
+import hu.meza.Selena.Reporter;
+import hu.meza.Selena.Utils;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,10 +12,9 @@ import java.util.Calendar;
 import java.util.Random;
 
 import org.testng.Assert;
-import org.testng.Reporter;
 
-import com.Selena.uielements.LocatorTypes;
-import com.Selena.uielements.Page;
+import hu.meza.Selena.uielements.LocatorTypes;
+import hu.meza.Selena.uielements.Page;
 import com.thoughtworks.selenium.Selenium;
 import com.thoughtworks.selenium.Wait;
 
@@ -28,6 +28,51 @@ import com.thoughtworks.selenium.Wait;
  */
 public final class Utilities implements Utils
 {
+    /**
+     * Util report verbosity level.
+     */
+    static final int UTIL_LOG_LEVEL = 1;
+
+    /**
+     * A utility that waits for a new window to open up. Requires current
+     * selenium object to work with.
+     *
+     * @param selenium
+     *            The selenium instances currently in work.
+     * @param actualNumberOfWindows
+     *            the number of windows present before the new window opening
+     *            action was taken (e.g. selenium.getAllWindowNames().length)
+     * @param timeout
+     *            The maximum amount of time to wait in milliseconds.
+     * @param logLevel
+     *            is the integer value of the actual log level
+     */
+    public void waitForNewWindow(final Selenium selenium,
+            final int actualNumberOfWindows, final String timeout,
+            final int logLevel)
+    {
+        Reporter.log("Waiting for change in the number of opened windows"
+                + " (currently " + actualNumberOfWindows + " present).",
+                logLevel);
+        new Wait()
+        {
+            public boolean until()
+            {
+                return (selenium.getAllWindowNames().length
+                                != actualNumberOfWindows)
+                        || (selenium.getAllWindowIds().length
+                                != actualNumberOfWindows)
+                        || (selenium.getAllWindowTitles().length
+                                != actualNumberOfWindows);
+            }
+        }.wait("No new window opened or disapeared within " + timeout
+                + " ms. The number of opened widow(s) is "
+                + selenium.getAllWindowNames().length + " (by name) or "
+                + selenium.getAllWindowIds().length + " (by Id) or "
+                + selenium.getAllWindowTitles().length + " (by title).", Integer
+                .parseInt(timeout));
+    }
+
     /**
      * A utility that waits for a new window to open up. Requires current
      * selenium object to work with.
@@ -43,25 +88,37 @@ public final class Utilities implements Utils
     public void waitForNewWindow(final Selenium selenium,
             final int actualNumberOfWindows, final String timeout)
     {
-        Reporter.log("Waiting for a new window to open up (currently "
-                + actualNumberOfWindows + " present).");
+        waitForNewWindow(selenium, actualNumberOfWindows, timeout,
+                UTIL_LOG_LEVEL);
+    }
+
+    /**
+     * A utility that waits for a specific url to appear in the address bar.
+     * Requires current selenium object to work with.
+     *
+     * @param selenium
+     *            The selenium instances currently in work.
+     * @param urlToAppear
+     *            The locator of the element.
+     * @param timeout
+     *            The maximum amount of time to wait in milliseconds.
+     * @param logLevel
+     *            is the integer value of the actual log level
+     */
+    public void waitForPage(final Selenium selenium, final String urlToAppear,
+            final String timeout, final int logLevel)
+    {
+        Reporter.log("Waiting for the page '"
+                + Reporter.getHtmlLink(urlToAppear) + "' to appear.", logLevel);
         new Wait()
         {
             public boolean until()
             {
-                return (selenium.getAllWindowNames().length
-                            > actualNumberOfWindows)
-                        || (selenium.getAllWindowIds().length
-                            > actualNumberOfWindows)
-                        || (selenium.getAllWindowTitles().length
-                            > actualNumberOfWindows);
+                return urlToAppear.equals(selenium.getLocation());
             }
-        }.wait("No new window opened within " + timeout
-                + " ms. The number of opened widow(s) is "
-                + selenium.getAllWindowNames().length + " (by name) or "
-                + selenium.getAllWindowIds().length + " (by Id) or "
-                + selenium.getAllWindowTitles().length + " (by title).", Integer
-                .parseInt(timeout));
+        }.wait("The page '" + urlToAppear + "' did not appear  within "
+                + timeout + " ms. The actual url is: '"
+                + selenium.getLocation() + "'.", Integer.parseInt(timeout));
     }
 
     /**
@@ -75,20 +132,38 @@ public final class Utilities implements Utils
      * @param timeout
      *            The maximum amount of time to wait in milliseconds.
      */
-    public void waitForPage(final Selenium selenium,
-                                   final String urlToAppear,
-                                   final String timeout)
+    public void waitForPage(final Selenium selenium, final String urlToAppear,
+            final String timeout)
     {
-        Reporter.log("Waiting for the page '" + urlToAppear + "' to appear.");
+        waitForPage(selenium, urlToAppear, timeout, UTIL_LOG_LEVEL);
+    }
+
+    /**
+     * A utility that waits for a specific element to appear on a given page.
+     * Requires current selenium object to work with.
+     *
+     * @param selenium
+     *            The selenium instances currently in work.
+     * @param locator
+     *            The locator of the element.
+     * @param timeout
+     *            The maximum amount of time to wait in milliseconds.
+     * @param logLevel
+     *            is the integer value of the actual log level
+     */
+    public void waitForElement(final Selenium selenium, final String locator,
+            final int timeout, final int logLevel)
+    {
+        Reporter.log("Waiting for element '" + locator + "' to appear.",
+                logLevel);
         new Wait()
         {
             public boolean until()
             {
-                return urlToAppear.equals(selenium.getLocation());
+                return selenium.isElementPresent(locator);
             }
-        }.wait("The page '" + urlToAppear + "' did not appear  within "
-                + timeout + " ms. The actual url is: '"
-                + selenium.getLocation() + "'.", Integer.parseInt(timeout));
+        }.wait("The element '" + locator + "' did not appear  within "
+                   + timeout + " ms.", timeout);
     }
 
     /**
@@ -102,17 +177,37 @@ public final class Utilities implements Utils
      * @param timeout
      *            The maximum amount of time to wait in milliseconds.
      */
-    public void waitForElement(final Selenium selenium,
-                                      final String locator, final int timeout)
+    public void waitForElement(final Selenium selenium, final String locator,
+            final int timeout)
     {
-        Reporter.log("Waiting for element '" + locator + "' to appear.");
+        waitForElement(selenium, locator, timeout, UTIL_LOG_LEVEL);
+    }
+
+    /**
+     * A utility that waits for a specific element to disappear on a given page.
+     * Requires current selenium object to work with.
+     *
+     * @param selenium
+     *            The selenium instances currently in work.
+     * @param locator
+     *            The locator of the element.
+     * @param timeout
+     *            The maximum amount of time to wait in milliseconds.
+     * @param logLevel
+     *            is the integer value of the actual log level
+     */
+    public void waitForNotPresent(final Selenium selenium,
+            final String locator, final int timeout, final int logLevel)
+    {
+        Reporter.log("Waiting for element '" + locator + "' to disappear.",
+                logLevel);
         new Wait()
         {
             public boolean until()
             {
-                return selenium.isElementPresent(locator);
+                return !selenium.isElementPresent(locator);
             }
-        }.wait("The element '" + locator + "' did not appear  within "
+        }.wait("The element '" + locator + "' did not disappear within "
                    + timeout + " ms.", timeout);
     }
 
@@ -128,17 +223,40 @@ public final class Utilities implements Utils
      *            The maximum amount of time to wait in milliseconds.
      */
     public void waitForNotPresent(final Selenium selenium,
-                                         final String locator,
-                                         final int timeout)
+            final String locator, final int timeout)
     {
-        Reporter.log("Waiting for element '" + locator + "' to disappear.");
+        waitForNotPresent(selenium, locator, timeout, UTIL_LOG_LEVEL);
+    }
+
+    /**
+     * A utility that waits for a specific element to get visible
+     *  on a given page. Requires current selenium object to work with.
+     *
+     * @param selenium
+     *            The selenium instances currently in work.
+     * @param locator
+     *            The locator of the element.
+     * @param timeout
+     *            The maximum amount of time to wait in milliseconds.
+     * @param logLevel
+     *            is the integer value of the actual log level
+     */
+    public void waitForVisible(final Selenium selenium, final String locator,
+            final int timeout, final int logLevel)
+    {
+        Reporter.log("Waiting for element '" + locator + "' to be visible.",
+                logLevel);
         new Wait()
         {
             public boolean until()
             {
-                return !selenium.isElementPresent(locator);
+                if (selenium.isElementPresent(locator))
+                {
+                    return selenium.isVisible(locator);
+                }
+                return false;
             }
-        }.wait("The element '" + locator + "' did not disappear within "
+        }.wait("The element '" + locator + "' did not become visible within "
                    + timeout + " ms.", timeout);
     }
 
@@ -153,17 +271,41 @@ public final class Utilities implements Utils
      * @param timeout
      *            The maximum amount of time to wait in milliseconds.
      */
-    public void waitForVisible(final Selenium selenium,
-                                      final String locator, final int timeout)
+    public void waitForVisible(final Selenium selenium, final String locator,
+            final int timeout)
     {
-        Reporter.log("Waiting for element '" + locator + "' to be visible.");
+        waitForVisible(selenium, locator, timeout, UTIL_LOG_LEVEL);
+    }
+
+    /**
+     * A utility that waits for a specific element to lose visibility
+     *  on a given page. Requires current selenium object to work with.
+     *
+     * @param selenium
+     *            The selenium instances currently in work.
+     * @param locator
+     *            The locator of the element.
+     * @param timeout
+     *            The maximum amount of time to wait in milliseconds.
+     * @param logLevel
+     *            is the integer value of the actual log level
+     */
+    public void waitForNotVisible(final Selenium selenium,
+            final String locator, final int timeout, final int logLevel)
+    {
+        Reporter.log("Waiting for element '" + locator + "' to fade away.",
+                logLevel);
         new Wait()
         {
             public boolean until()
             {
-                return selenium.isVisible(locator);
+                if (selenium.isElementPresent(locator))
+                {
+                    return !selenium.isVisible(locator);
+                }
+                return true;
             }
-        }.wait("The element '" + locator + "' did not become visible within "
+        }.wait("The element '" + locator + "' did not fade away within "
                    + timeout + " ms.", timeout);
     }
 
@@ -179,18 +321,9 @@ public final class Utilities implements Utils
      *            The maximum amount of time to wait in milliseconds.
      */
     public void waitForNotVisible(final Selenium selenium,
-                                         final String locator,
-                                         final int timeout)
+            final String locator, final int timeout)
     {
-        Reporter.log("Waiting for element '" + locator + "' to fade away.");
-        new Wait()
-        {
-            public boolean until()
-            {
-                return !selenium.isVisible(locator);
-            }
-        }.wait("The element '" + locator + "' did not fade away within "
-                   + timeout + " ms.", timeout);
+        waitForNotVisible(selenium, locator, timeout, UTIL_LOG_LEVEL);
     }
 
     /**
@@ -203,13 +336,15 @@ public final class Utilities implements Utils
      *            The text that we are waiting for.
      * @param timeout
      *            The maximum amount of time to wait in milliseconds.
+     * @param logLevel
+     *            is the integer value of the actual log level
      *
      */
     public void waitForTextToAppear(final Selenium selenium,
-                                           final String textToAppear,
-                                           final long timeout)
+            final String textToAppear, final long timeout, final int logLevel)
     {
-        Reporter.log("Waiting '" + textToAppear + "' text to appear.");
+        Reporter.log("Waiting '" + textToAppear +
+                "' text to appear.", logLevel);
         new Wait()
         {
             public boolean until()
@@ -218,6 +353,106 @@ public final class Utilities implements Utils
             }
         }.wait("'" + textToAppear + "' text did not appear within " + timeout
                    + " ms.", timeout);
+    }
+
+    /**
+     * A utility that waits for a specific text to appear on a given page.
+     * Requires current selenium object to work with.
+     *
+     * @param selenium
+     *            The selenium instances currently in work.
+     * @param textToAppear
+     *            The text that we are waiting for.
+     * @param timeout
+     *            The maximum amount of time to wait in milliseconds.
+     */
+    public void waitForTextToAppear(final Selenium selenium,
+            final String textToAppear, final long timeout)
+    {
+     waitForTextToAppear(selenium, textToAppear, timeout, UTIL_LOG_LEVEL);
+    }
+
+    /**
+     * A utility that waits for a specific text to be contained in a specified
+     * location on the page. Requires current selenium object to work with.
+     *
+     * @param selenium
+     *            The selenium instances currently in work.
+     * @param textLocator
+     *            The locator where the text is waited
+     * @param textToAppear
+     *            The text that we are waiting for.
+     * @param timeout
+     *            The maximum amount of time to wait in milliseconds.
+     * @param logLevel
+     *            is the integer value of the actual log level
+     */
+    public void waitForTextToAppear(final Selenium selenium,
+            final String textLocator, final String textToAppear,
+            final long timeout, final int logLevel)
+    {
+        Reporter.log("Waiting '" + textToAppear + "' text to appear at '"
+                + textLocator + "'.", logLevel);
+        new Wait()
+        {
+            public boolean until()
+            {
+                return selenium.getText(textLocator).contains(textToAppear);
+            }
+        }.wait("'" + textToAppear + "' text did not appear at '" + textLocator
+                + "'  within " + timeout + " ms.", timeout);
+    }
+
+    /**
+     * A utility that waits for a specific text to be contained in a specified
+     * location on the page. Requires current selenium object to work with.
+     *
+     * @param selenium
+     *            The selenium instances currently in work.
+     * @param textLocator
+     *            The locator where the text is waited
+     * @param textToAppear
+     *            The text that we are waiting for.
+     * @param timeout
+     *            The maximum amount of time to wait in milliseconds.
+     */
+    public void waitForTextToAppear(final Selenium selenium,
+            final String textLocator, final String textToAppear,
+            final long timeout)
+    {
+        waitForTextToAppear(selenium, textToAppear, timeout, UTIL_LOG_LEVEL);
+    }
+
+    /**
+     * A utility that waits for a specific element's text field to change its
+     * value on a given page. Requires current selenium object to work with.
+     *
+     * @param selenium
+     *            The selenium instances currently in work.
+     * @param locator
+     *            The locator of the element.
+     * @param timeout
+     *            The maximum amount of time to wait in milliseconds.
+     * @param logLevel
+     *            is the integer value of the actual log level
+     */
+    public void waitForTextToChange(final Selenium selenium,
+            final String locator, final int timeout, final int logLevel)
+    {
+        /**
+         * The old text that has to change.
+         */
+        final String oldText = selenium.getText(locator);
+
+        Reporter.log("Waiting for '" + oldText + "' to change.", logLevel);
+        new Wait()
+        {
+            public boolean until()
+            {
+                return oldText.equals(selenium.getText(locator));
+            }
+        }.wait("'" + oldText + "' text located at '" + locator
+                   + "' did not change within " + timeout + " ms.", timeout);
     }
 
     /**
@@ -232,23 +467,54 @@ public final class Utilities implements Utils
      *            The maximum amount of time to wait in milliseconds.
      */
     public void waitForTextToChange(final Selenium selenium,
-                                           final String locator,
-                                           final int timeout)
+            final String locator, final int timeout)
     {
-        /**
-         * The old text that has to change.
-         */
-        final String oldText = selenium.getText(locator);
+        waitForTextToChange(selenium, locator, timeout, UTIL_LOG_LEVEL);
+    }
 
-        Reporter.log("Waiting for '" + oldText + "' to change.");
+    /**
+     * A utility that waits for a specific element's attribute to change.
+     * Also sensitive to the disappear or appear of the attribute.
+     * Works only with XPATH locators.
+     * Requires current selenium object to work with.
+     *
+     * @param selenium
+     *            The selenium instances currently in work.
+     * @param locator
+     *            The locator of the element that may has an attribute.
+     *            (e.g. 'userName@class' or '//input[@name='q']')
+     * @param attribute
+     *            The name of the attribute beginning with an '@' sign.
+     *            (e.g. '@value' or '@class')
+     * @param timeout
+     *            The maximum amount of time to wait in milliseconds.
+     * @param logLevel
+     *            is the integer value of the actual log level
+     */
+    public void waitForAttributeToChange(final Selenium selenium,
+            final String locator, final String attribute, final int timeout,
+            final int logLevel)
+    {
+        final String oldAttribute = getAttribute(selenium, locator, attribute);
+        Reporter.log("Waiting for element '" + locator
+                     + "' to change it's '" + attribute + "' attribute from '"
+                     + oldAttribute + "' to something else.", logLevel);
         new Wait()
         {
             public boolean until()
             {
-                return oldText.equals(selenium.getText(locator));
+                try
+                {
+                    return !oldAttribute.equals(selenium.getAttribute(locator
+                            + attribute));
+                } catch (Exception e)
+                {
+                    return !oldAttribute.equals("");
+                }
             }
-        }.wait("'" + oldText + "' text located at '" + locator
-                   + "' did not change within " + timeout + " ms.", timeout);
+        }.wait("'" + oldAttribute + "', the value of the '" + attribute
+                + "' attribute in the element '" + locator
+                + "' did not change within " + timeout + " ms.", timeout);
     }
 
     /**
@@ -269,64 +535,70 @@ public final class Utilities implements Utils
      *            The maximum amount of time to wait in milliseconds.
      */
     public void waitForAttributeToChange(final Selenium selenium,
-                                                final String locator,
-                                                final String attribute,
-                                                final int timeout)
+            final String locator, final String attribute, final int timeout)
     {
-        /**
-         * Save the actual text that has to change (if element is not found
-         * assume empty string).
-         */
-        String actAttribute;
-        Assert.assertTrue(selenium.isElementPresent(locator));
-        try
-        {
-            actAttribute = selenium.getAttribute(locator + attribute);
-        } catch (Exception e)
-        {
-            actAttribute = "";
-        }
-
-        /**
-         * Save the actual text to a final variable to pass it to the inner
-         * class.
-         */
-        final String oldAttribute = actAttribute;
-
-        Reporter.log("Waiting for element '" + locator
-                     + "' to change it's '" + attribute + "' attribute from '"
-                     + oldAttribute + "' to something else.");
-        new Wait()
-        {
-            public boolean until()
-            {
-                Assert.assertTrue(selenium.isElementPresent(locator));
-                try
-                {
-                    return !oldAttribute.equals(selenium.getAttribute(
-                        locator
-                        + attribute));
-                } catch (Exception e)
-                {
-                    return !oldAttribute.equals("");
-                }
-            }
-        }.wait("'" + oldAttribute + "', the value of the '" + attribute
-                   + "' attribute in the element '" + locator
-                   + "' did not change within " + timeout + " ms.", timeout);
+        waitForAttributeToChange(selenium, locator, attribute, timeout,
+                UTIL_LOG_LEVEL);
     }
 
     /**
      * A utility that waits for a specific element's attribute to become a
-     * specified value. Also works with "" content to appear.
-     * Works only with XPATH locators.
-     * Requires current selenium object to work with.
+     * specified value. The only drawback of this function is, that in the case
+     * when one waits for "" content to appear it can't tell whether the
+     * attribute disappeared or it holds the "" content. Works with any kind of
+     * locators. Requires current selenium object to work with.
      *
      * @param selenium
      *            The selenium instances currently in work.
      * @param locator
-     *            The locator of the element that may has an attribute. (e.g.
-     *            'userName@class' or '//input[@name='q']')
+     *            The locator of the element that may has an attribute
+     * @param attribute
+     *            The name of the attribute beginning with an '@' sign. (e.g.
+     *            '@value' or '@class')
+     * @param attributeValue
+     *            The attribute value that one should wait for
+     * @param timeout
+     *            The maximum amount of time to wait in milliseconds.
+     * @param logLevel
+     *            is the integer value of the actual log level
+     */
+    public void waitForAttributeValue(final Selenium selenium,
+            final String locator, final String attribute,
+            final String attributeValue, final int timeout, final int logLevel)
+        {
+        Reporter.log("Waiting for element '" + locator
+                + "' to have an '" + attribute + "' attribute with '"
+                + attributeValue + "' value.", logLevel);
+
+        new Wait()
+        {
+            public boolean until()
+            {
+                try
+                {
+                    return selenium.getAttribute(locator + attribute).equals(
+                            attributeValue);
+                } catch (Exception e)
+                {
+                    return attributeValue.isEmpty();
+                }
+            }
+        }.wait("The value of the '" + locator + "' element's '" + attribute
+                + "' attribute did not became '" + attributeValue + "' within "
+                + timeout + " ms.", timeout);
+    }
+
+    /**
+     * A utility that waits for a specific element's attribute to become a
+     * specified value. The only drawback of this function is, that in the case
+     * when one waits for "" content to appear it can't tell whether the
+     * attribute disappeared or it holds the "" content. Works with any kind of
+     * locators. Requires current selenium object to work with.
+     *
+     * @param selenium
+     *            The selenium instances currently in work.
+     * @param locator
+     *            The locator of the element that may has an attribute
      * @param attribute
      *            The name of the attribute beginning with an '@' sign. (e.g.
      *            '@value' or '@class')
@@ -338,30 +610,88 @@ public final class Utilities implements Utils
     public void waitForAttributeValue(final Selenium selenium,
             final String locator, final String attribute,
             final String attributeValue, final int timeout)
-        {
-        Reporter.log("Waiting for element '" + locator
-                + "' to have an '" + attribute + "' attribute with '"
-                + attributeValue + "' value.");
+    {
+        waitForAttributeValue(selenium, locator, attribute, attributeValue,
+                timeout, UTIL_LOG_LEVEL);
+    }
 
-        waitForElement(selenium, locator + "/" + attribute, timeout);
+    /**
+     * A utility that waits for a specific element's attribute to contain a
+     * specified value (substring). Waiting for "" content will result immediate
+     * return. Works with any kind of locators. Requires current selenium object
+     * to work with.
+     *
+     * @param selenium
+     *            The selenium instances currently in work.
+     * @param locator
+     *            The locator of the element that may has an attribute
+     * @param attribute
+     *            The name of the attribute beginning with an '@' sign. (e.g.
+     *            '@value' or '@class')
+     * @param attributeValue
+     *            The attribute value that one should wait for
+     * @param timeout
+     *            The maximum amount of time to wait in milliseconds.
+     * @param logLevel
+     *            is the integer value of the actual log level
+     */
+    public void waitForAttributeContains(final Selenium selenium,
+            final String locator, final String attribute,
+            final String attributeValue, final int timeout, final int logLevel)
+    {
+        Reporter.log("Waiting for element '" + locator + "' to have an '"
+                + attribute + "' attribute that contains '" + attributeValue
+                + "' string.", logLevel);
+
         new Wait()
         {
             public boolean until()
             {
-                return attributeValue.equals(getAttribute(selenium, locator,
-                        attribute));
+                try
+                {
+                    return selenium.getAttribute(locator + attribute).contains(
+                            attributeValue);
+                } catch (Exception e)
+                {
+                    return attributeValue.isEmpty();
+                }
             }
         }.wait("The value of the '" + locator + "' element's '" + attribute
-                + "' attribute did not became '" + attributeValue + "' within "
+                + "' attribute (" + selenium.getAttribute(locator + attribute)
+                + ") did not contain '" + attributeValue + "' within "
                 + timeout + " ms.", timeout);
     }
 
     /**
-     * A utility that reads a specific element's attribute. Gives "" if the
-     * attribute has no value and throws exception if the attribute is not
-     * present.
-     * Works only with XPATH locator. Requires current selenium object
+     * A utility that waits for a specific element's attribute to contain a
+     * specified value (substring). Waiting for "" content will result immediate
+     * return. Works with any kind of locators. Requires current selenium object
      * to work with.
+     *
+     * @param selenium
+     *            The selenium instances currently in work.
+     * @param locator
+     *            The locator of the element that may has an attribute
+     * @param attribute
+     *            The name of the attribute beginning with an '@' sign. (e.g.
+     *            '@value' or '@class')
+     * @param attributeValue
+     *            The attribute value that one should wait for
+     * @param timeout
+     *            The maximum amount of time to wait in milliseconds.
+     */
+    public void waitForAttributeContains(final Selenium selenium,
+            final String locator, final String attribute,
+            final String attributeValue, final int timeout)
+    {
+        waitForAttributeContains(selenium, locator, attribute, attributeValue,
+                timeout, UTIL_LOG_LEVEL);
+    }
+
+    /**
+     * A utility that reads a specific element's attribute. Gives "" if the
+     * attribute is not present or it has no value. Requires current selenium
+     * object to work with.
      *
      * @param selenium
      *            The selenium instances currently in work.
@@ -371,15 +701,12 @@ public final class Utilities implements Utils
      * @param attribute
      *            The name of the attribute beginning with an '@' sign. (e.g.
      *            '@value' or '@class')
-     * @return the value of the located element's attribute.
+     * @return the value of the located element's attribute, "" if the attribute
+     *         is not present or its value is empty.
      */
-    public String getAttribute(final Selenium selenium,
-                                      final String locator,
-                                      final String attribute)
+    public String getAttribute(final Selenium selenium, final String locator,
+            final String attribute)
     {
-        Assert.assertTrue(selenium.isElementPresent(locator + "/" + attribute),
-                          "The attribute '" + locator + "/" + attribute
-                          + "' could not found.");
         try
         {
             return selenium.getAttribute(locator + attribute);
@@ -453,7 +780,6 @@ public final class Utilities implements Utils
     {
         String javaScriptUserAgent = selenium.getEval(
                 "selenium.browserbot.getCurrentWindow().navigator.userAgent");
-        Reporter.log("UserAgent: " + javaScriptUserAgent);
         return javaScriptUserAgent.contains("MSIE");
     }
 
@@ -489,11 +815,72 @@ public final class Utilities implements Utils
      *            The maximum amount of time to wait in milliseconds.
      */
     public void waitForAjaxRequestDone(final Selenium selenium,
-                                              final String timeout)
+            final String timeout)
     {
-        selenium.waitForCondition(
-            "selenium.browserbot.getCurrentWindow().jQuery.active == 0",
-            timeout);
+        new Wait()
+        {
+            public boolean until()
+            {
+                return selenium.getEval(
+                        "selenium.browserbot.getCurrentWindow().jQuery.active")
+                        .equals("0");
+            }
+        }.wait("The ajax request did not completed within " + timeout + " ms.",
+                Integer.parseInt(timeout));
+//        selenium.waitForCondition(
+//                "selenium.browserbot.getCurrentWindow().jQuery.active == 0",
+//                timeout);
+
+    }
+
+    /**
+     * A utility that waits for a page load to complete. Requires current
+     * selenium object to work with.
+     *
+     * @param selenium
+     *            The selenium instances currently in work.
+     * @param timeout
+     *            The maximum amount of time to wait in milliseconds.
+     */
+    public void waitForPageOnLoadStart(final Selenium selenium,
+            final String timeout)
+    {
+        new Wait()
+        {
+            public boolean until()
+            {
+                return !selenium
+                        .getEval(
+              "selenium.browserbot.getCurrentWindow().document.readyState")
+                        .equals("complete");
+            }
+        }.wait("The document ready state still 'complete' after "
+                + timeout + " ms.", Integer.parseInt(timeout));
+    }
+
+    /**
+     * A utility that waits for a page load to complete. Requires current
+     * selenium object to work with.
+     *
+     * @param selenium
+     *            The selenium instances currently in work.
+     * @param timeout
+     *            The maximum amount of time to wait in milliseconds.
+     */
+    public void waitForPageOnLoadFinish(final Selenium selenium,
+            final String timeout)
+    {
+        new Wait()
+        {
+            public boolean until()
+            {
+                return selenium
+                        .getEval(
+              "selenium.browserbot.getCurrentWindow().document.readyState")
+                        .equals("complete");
+            }
+        }.wait("The document ready state did not become 'complete' within "
+                + timeout + " ms.", Integer.parseInt(timeout));
     }
 
     /**
@@ -506,7 +893,7 @@ public final class Utilities implements Utils
      *            The maximum amount of time to wait in milliseconds.
      */
     public void waitForAjaxRequestStart(final Selenium selenium,
-                                               final String timeout)
+            final String timeout)
     {
         selenium.waitForCondition(
             "selenium.browserbot.getCurrentWindow().jQuery.active != 0",
@@ -523,9 +910,11 @@ public final class Utilities implements Utils
      *            The selenium instances currently in work.
      * @param timeout
      *            The maximum amount of time to wait in milliseconds.
+     * @param logLevel
+     *            is the integer value of the actual log level
      */
     public void waitForAllAjaxRequestsDone(final Selenium selenium,
-                                                  final String timeout)
+            final String timeout, final int logLevel)
     {
         /**
          * Wait time for a new ajax request to start.
@@ -535,11 +924,28 @@ public final class Utilities implements Utils
             "selenium.browserbot.getCurrentWindow().jQuery.active").equals(
             "0"))
         {
-            Reporter.log("Waiting for ajax request to finish.");
+            Reporter.log("Waiting for ajax request to finish.", logLevel);
             waitForAjaxRequestDone(selenium, timeout);
-            Reporter.log("Waiting for new ajax request to begin...");
+            Reporter.log("Waiting for new ajax request to begin...", logLevel);
             waitTime(waitForNewRequest);
         }
+    }
+
+    /**
+     * A utility that waits for all ajax request to complete.
+     * If a request is active waits for that to finish,
+     *  than waits a predefined amount time whether a new request is started.
+     * This loops until no active request found after the predefined wait time.
+     *
+     * @param selenium
+     *            The selenium instances currently in work.
+     * @param timeout
+     *            The maximum amount of time to wait in milliseconds.
+     */
+    public void waitForAllAjaxRequestsDone(final Selenium selenium,
+            final String timeout)
+    {
+        waitForAllAjaxRequestsDone(selenium, timeout, UTIL_LOG_LEVEL);
     }
 
     /**
@@ -569,11 +975,13 @@ public final class Utilities implements Utils
      *            the list to be merged into an other list.
      * @param intoThis
      *            the list that will contain all elements.
+     * @param logLevel
+     *            is the integer value of the actual log level
      * @return intoThis after the merge is done or Assert failure occurs.
      */
     public ArrayList<String> mergeArrayListsWithNoDuplicate(
-        final ArrayList<String> mergeThis,
-        final ArrayList<String> intoThis)
+            final ArrayList<String> mergeThis,
+            final ArrayList<String> intoThis, final int logLevel)
     {
         for (int i = 0; i < mergeThis.size(); i++)
         {
@@ -586,11 +994,30 @@ public final class Utilities implements Utils
             } else
             {
                 Reporter.log("'" + mergeThis.get(i).toString()
-                             + "' added to list items.");
+                        + "' added to list items.", logLevel);
                 intoThis.add(mergeThis.get(i));
             }
         }
         return intoThis;
+    }
+
+    /**
+     * A utility that merges two ArrayLists (of type String) and avoiding
+     * duplicate entries. The "intoThis" ArrayList is not checked for
+     * duplications that are already exists.
+     *
+     * @param mergeThis
+     *            the list to be merged into an other list.
+     * @param intoThis
+     *            the list that will contain all elements.
+     * @return intoThis after the merge is done or Assert failure occurs.
+     */
+    public ArrayList<String> mergeArrayListsWithNoDuplicate(
+            final ArrayList<String> mergeThis,
+            final ArrayList<String> intoThis)
+    {
+        return mergeArrayListsWithNoDuplicate(mergeThis, intoThis,
+                UTIL_LOG_LEVEL);
     }
 
     /**
@@ -642,12 +1069,12 @@ public final class Utilities implements Utils
      *            Page class containing the given element.
      * @param langLocatorType
      *      element locator type addressing the checked language.
+     * @param logLevel
+     *            is the integer value of the actual log level
      */
-    public void checkElementTextLanguage(
-            final Selenium selenium,
-            final String elementName,
-            final Page elementContainer,
-            final LocatorTypes langLocatorType)
+    public void checkElementTextLanguage(final Selenium selenium,
+            final String elementName, final Page elementContainer,
+            final LocatorTypes langLocatorType, final int logLevel)
     {
         /**
          * Wait for element default timeout.
@@ -667,8 +1094,8 @@ public final class Utilities implements Utils
             langLocatorType, elementName);
 
         Reporter.log("Checking element '" + elementName + "' text is '"
-                     + expectedText + "'.");
-        waitForElement(selenium, elementLocator, elementWaitTimeout);
+                     + expectedText + "'.", logLevel);
+        waitForElement(selenium, elementLocator, elementWaitTimeout, logLevel);
 
         /**
          * The actual text of the given element on the page.
@@ -678,6 +1105,26 @@ public final class Utilities implements Utils
                 "'" + elementLocator
                 + "' text must be '" + expectedText + "' but it is '"
                 + actualText + "'");
+    }
+
+    /**
+     * Checks whether an element text is written in the appropriate language.
+     *
+     * @param selenium
+     *            The selenium instances currently in work.
+     * @param elementName
+     *            the name of the element locator.
+     * @param elementContainer
+     *            Page class containing the given element.
+     * @param langLocatorType
+     *      element locator type addressing the checked language.
+     */
+    public void checkElementTextLanguage(final Selenium selenium,
+            final String elementName, final Page elementContainer,
+            final LocatorTypes langLocatorType)
+    {
+        checkElementTextLanguage(selenium, elementName, elementContainer,
+                langLocatorType, UTIL_LOG_LEVEL);
     }
 
     /**
@@ -691,12 +1138,12 @@ public final class Utilities implements Utils
      *            Page class containing the given element.
      * @param langLocatorType
      *      element locator type addressing the checked language.
+     * @param logLevel
+     *            is the integer value of the actual log level
      */
-    public void checkElementValueLanguage(
-            final Selenium selenium,
-            final String elementName,
-            final Page elementContainer,
-            final LocatorTypes langLocatorType)
+    public void checkElementValueLanguage(final Selenium selenium,
+            final String elementName, final Page elementContainer,
+            final LocatorTypes langLocatorType, final int logLevel)
     {
         /**
          * Wait for element default timeout.
@@ -716,8 +1163,8 @@ public final class Utilities implements Utils
             langLocatorType, elementName);
 
         Reporter.log("Checking element '" + elementName + "' value is '"
-                     + expectedValue + "'.");
-        waitForElement(selenium, elementLocator, elementWaitTimeout);
+                     + expectedValue + "'.", logLevel);
+        waitForElement(selenium, elementLocator, elementWaitTimeout, logLevel);
 
         /**
          * The actual value of the given element on the page.
@@ -728,9 +1175,27 @@ public final class Utilities implements Utils
                           "'"
                           + elementLocator + "' value must be '" + expectedValue
                           + "' but it is '" + actualValue + "'");
-
     }
 
+    /**
+     * Checks whether an element value is written in the appropriate language.
+     *
+     * @param selenium
+     *            The selenium instances currently in work.
+     * @param elementName
+     *            the name of the element locator.
+     * @param elementContainer
+     *            Page class containing the given element.
+     * @param langLocatorType
+     *      element locator type addressing the checked language.
+     */
+    public void checkElementValueLanguage(final Selenium selenium,
+            final String elementName, final Page elementContainer,
+            final LocatorTypes langLocatorType)
+    {
+        checkElementValueLanguage(selenium, elementName, elementContainer,
+                langLocatorType, UTIL_LOG_LEVEL);
+    }
 
     /**
      * Returns the integer value of the elements' left border position.
@@ -915,18 +1380,45 @@ public final class Utilities implements Utils
     }
 
     /**
-     * Kill a running process.
-     * @param processName Name of the process to kill.
+     * Add time to the actual time in the specified format by using
+     * SimpleDateFormat and Calendar.
+     *
+     * @param dateFormat
+     *            the format string of the returned time text.
+     *            (e.g. "yyyy-MM-dd HH:mm:ss")
+     * @param calendarField
+     *            The calendar field (e.g. Calendar.Day, Calendar.Hour)
+     *            which increase the value.
+     * @param valueToAdd
+     *            the number to Add the selected calendar field.
+     * @return The date formatted according to the given dateFormat
      */
-    public void killProcess(final String processName)
+    public String nowPlusTime(final String dateFormat, final int calendarField,
+            final int valueToAdd)
     {
-        Reporter.log("Detecting operating system...");
+        SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
+        Calendar cal = Calendar.getInstance();
+        cal.add(calendarField, valueToAdd);
+        return sdf.format(cal.getTime());
+    }
+
+    /**
+     * Kill a running process.
+     *
+     * @param processName
+     *            Name of the process to kill.
+     * @param logLevel
+     *            is the integer value of the actual log level
+     */
+    public void killProcess(final String processName, final int logLevel)
+    {
+        Reporter.log("Detecting operating system...", logLevel);
         String opSystem = System.getProperty("os.name");
-        Reporter.log("Op system is: " + opSystem);
+        Reporter.log("Op system is: " + opSystem, logLevel);
 
         if (opSystem.toLowerCase().contains("win"))
         {
-            Reporter.log("Executing win kill...");
+            Reporter.log("Executing win kill...", logLevel);
             try
             {
                 Runtime.getRuntime().exec("pskill " + processName);
@@ -935,6 +1427,17 @@ public final class Utilities implements Utils
                 e.printStackTrace();
             }
         }
+    }
+
+    /**
+     * Kill a running process.
+     *
+     * @param processName
+     *            Name of the process to kill.
+     */
+    public void killProcess(final String processName)
+    {
+        killProcess(processName, UTIL_LOG_LEVEL);
     }
 
     /**

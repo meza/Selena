@@ -3,16 +3,16 @@
  *
  * @author Gergely Brautigam
  */
-package com.Selena;
+package hu.meza.Selena;
 
-import com.Selena.uielements.LocatorFactory;
+import hu.meza.Selena.uielements.LocatorFactory;
 import com.thoughtworks.selenium.Selenium;
-import com.Selena.uielements.Page;
-import com.Selena.uielements.SelenaLocatorFactory;
-import com.Selena.uielements.UISerializer;
+import hu.meza.Selena.uielements.Page;
+import hu.meza.Selena.uielements.SelenaLocatorFactory;
+import hu.meza.Selena.uielements.UISerializer;
 import java.io.File;
+
 import org.testng.Assert;
-import org.testng.Reporter;
 
 
 /**
@@ -62,6 +62,11 @@ public class BasePage
      * The LocatorFactory instance.
      */
     private LocatorFactory locatorFactory;
+
+    /**
+     * Default verbosity level parameter.
+     * */
+    private int verbLevel = 1;
 
     /**
      * Get a URL.
@@ -190,7 +195,7 @@ public class BasePage
      */
     public void openWebPage(final String webPage)
     {
-        Reporter.log("Opening page: '" + webPage + "'");
+        Reporter.log("Opening " + Reporter.getHtmlLink(webPage));
         selenium.open(webPage, defaultPageTimeOut);
         selenium.waitForPageToLoad(defaultPageTimeOut);
     }
@@ -222,9 +227,35 @@ public class BasePage
             elementName + " element not found in UIELEMENTS config file");
 
         return elementLocator;
-
     }
 
+    /**
+     * Getter for verbLevel.
+     * @return the verbLevel
+     */
+    protected int getVerbLevel()
+    {
+        return verbLevel;
+    }
+
+    /**
+     * Decreases log level verbosity. Call this if further log outputs are less
+     * important. Use increaseVerbosity before return of the current function
+     * occurs.
+     */
+    protected void decreaseVerbosity()
+    {
+        verbLevel--;
+    }
+
+    /**
+     * Increases log level verbosity. Call this if further log outputs are
+     * important. Use only if a decreaseVerbosity preceded this call.
+     */
+    protected void increaseVerbosity()
+    {
+        verbLevel++;
+    }
 
 }
 

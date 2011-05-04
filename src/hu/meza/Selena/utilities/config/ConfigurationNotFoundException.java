@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-package com.Selena.utilities.config;
+package hu.meza.Selena.utilities.config;
 
 /**
  * Configuration Not Found Exception.

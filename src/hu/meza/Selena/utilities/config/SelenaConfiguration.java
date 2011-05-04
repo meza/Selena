@@ -1,7 +1,7 @@
-package com.Selena.utilities.config;
+package hu.meza.Selena.utilities.config;
 
-import com.Selena.ConfigParams;
-import com.Selena.Configuration;
+import hu.meza.Selena.ConfigParams;
+import hu.meza.Selena.Configuration;
 import java.io.File;
 import java.io.IOException;
 import java.io.FileInputStream;

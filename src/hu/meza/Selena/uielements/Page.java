@@ -1,6 +1,6 @@
-package com.Selena.uielements;
+package hu.meza.Selena.uielements;
 
-import com.Selena.Locator;
+import hu.meza.Selena.Locator;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -46,7 +46,7 @@ public class Page {
             URL aurl = new URL(baseUrl);
             return new URL(aurl, normalizePath(path));
         } catch (MalformedURLException ex) {
-            throw new com.Selena.uielements.MalformedURLException(
+            throw new hu.meza.Selena.uielements.MalformedURLException(
                     baseUrl, path, ex.getMessage());
         }
     }
@@ -150,40 +150,35 @@ public class Page {
             final WebElement elem) {
         List<Locator> locators = elem.getLocators();
 
-        int css = -1;
-        int xpath = -1;
-        int id = -1;
-        int index = 0;
-        for (Locator elemLoc : locators) {
-            if (elemLoc.getType().equals("css")) {
-                css = index;
+        if (locators.isEmpty())
+        {
+            throw new LocatorNotFoundException(elem.getName(), locator);
+        }
+
+        final String[] priorityList = {"id","css","xpath"};
+
+        if (locator.isEmpty())
+        {
+            for (String actType : priorityList)
+            {
+                for (Locator elemLoc : locators)
+                {
+                    if (elemLoc.getType().equals(actType))
+                    {
+                        return elemLoc.getValue();
+                    }
+                }
             }
-            if (elemLoc.getType().equals("xpath")) {
-                xpath = index;
-            }
-            if (elemLoc.getType().equals("id")) {
-                id = index;
-            }
-            if(!locator.isEmpty()) {
-                if (elemLoc.getType().equals(locator)) {
+            return locators.get(0).getValue();
+        }else
+        {
+            for (Locator elemLoc : locators)
+            {
+                if (elemLoc.getType().equals(locator))
+                {
                     return elemLoc.getValue();
                 }
             }
-            index++;
-        }
-
-        if (-1 < css) {
-            return locators.get(css).getValue();
-        }
-        if (-1 < id) {
-            return locators.get(id).getValue();
-        }
-        if (-1 < xpath) {
-            return locators.get(xpath).getValue();
-        }
-
-        if (locators.size() > 0) {
-            return locators.get(0).getValue();
         }
 
         throw new LocatorNotFoundException(elem.getName(), locator);

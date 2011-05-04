@@ -3,15 +3,20 @@
  * and open the template in the editor.
  */
 
-package com.Selena.uielements;
+package hu.meza.Selena.uielements;
 
-import com.Selena.Locator;
+import hu.meza.Selena.Locator;
 
 /**
  *
  * @author meza
  */
-public class GenericLocator implements Locator{
+public class EmptyLocator implements Locator {
+
+    /**
+     * The value of the locator.
+     */
+    private final String locVal;
 
     /**
      * The type of the locator.
@@ -19,30 +24,24 @@ public class GenericLocator implements Locator{
     private final String locType;
 
     /**
-     * The value of the locator.
-     */
-    private final String locVal;
-
-
-    /**
      * Creates the locator.
+     *
      * @param type The type
      * @param value The value
      */
-    public GenericLocator(final String type, final String value)
-    {
-        this.locType = type;
+    public EmptyLocator(final String type, final String value) {
         this.locVal = value;
+        this.locType = type;
     }
-
 
     /**
      * Gets the value of the Locator.
      * @return the value.
      */
     public String getValue() {
-        return this.getType()+"="+this.locVal;
+        return this.locVal;
     }
+
 
     /**
      * Gets the type of the Locator.

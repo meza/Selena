@@ -1,4 +1,4 @@
-package com.Selena.uielements;
+package hu.meza.Selena.uielements;
 
 
 /**

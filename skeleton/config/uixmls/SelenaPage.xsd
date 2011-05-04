@@ -3,26 +3,29 @@
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
     <xs:complexType name="LocatorsType">
         <xs:choice minOccurs="1" maxOccurs="unbounded">
-    	    <xs:element name="css" type="xs:string"/>
-            <xs:element name="class" type="xs:string"/>
-            <xs:element name="id"    type="xs:string"/>
-            <xs:element name="link"  type="xs:string"/>
-            <xs:element name="name"  type="xs:string"/>
-            <xs:element name="value" type="xs:string"/>
-            <xs:element name="xpath" type="xs:string"/>
-            <xs:any minOccurs="0" processContents="skip"/>
+    	    <xs:element name="css" type="xs:string" />
+    	    <xs:element name="english" type="xs:string" />
+    	    <xs:element name="japan" type="xs:string" />
+            <xs:element name="class" type="xs:string" />
+            <xs:element name="id" type="xs:string" />
+            <xs:element name="link" type="xs:string" />
+            <xs:element name="name" type="xs:string" />
+            <xs:element name="value" type="xs:string" />
+            <xs:element name="xpath" type="xs:string" />
         </xs:choice>
     </xs:complexType>
 
     <xs:complexType name="GroupType">
         <xs:choice minOccurs="0" maxOccurs="unbounded">
-            <xs:element name="WebElement" type="WebElementType"/>
+            <xs:element name="WebElement" type="WebElementType" minOccurs="0" maxOccurs="unbounded">
+            </xs:element>
+	        <xs:element name="Group" type="GroupType" minOccurs="0" maxOccurs="unbounded" />
         </xs:choice>
         <xs:attribute name="name" type="xs:string" use="required"/>
     </xs:complexType>
 
     <xs:complexType name="WebElementType">
-        <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:choice minOccurs="1" maxOccurs="unbounded">
             <xs:element name="Locators" type="LocatorsType"/>
         </xs:choice>
         <xs:attribute name="name" type="xs:string" use="required"/>
@@ -35,12 +38,25 @@
     </xs:complexType>
 
     <xs:element name="Page">
-        <xs:complexType>
-            <xs:choice minOccurs="0" maxOccurs="1">
-                <xs:element name="Elements" type="ElementsType"/>
+       <xs:complexType>
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
+                <xs:element name="Elements" type="ElementsType">
+                </xs:element>
             </xs:choice>
             <xs:attribute name="url" type="xs:string" use="optional"/>
             <xs:attribute name="path" type="xs:string" use="optional"/>
         </xs:complexType>
+		<xs:unique name="UniqueID">
+			<xs:selector xpath=".//WebElement/*"></xs:selector>
+			<xs:field xpath="id"></xs:field>
+		</xs:unique>
+	    <xs:unique name="UniqueCSS">
+    	    <xs:selector xpath=".//WebElement/*"></xs:selector>
+	        <xs:field xpath="css"></xs:field>
+	    </xs:unique>            
+		<xs:unique name="UniqueName">
+			<xs:selector xpath=".//WebElement"></xs:selector>
+			<xs:field xpath="@name"></xs:field>
+		</xs:unique>
     </xs:element>
 </xs:schema>

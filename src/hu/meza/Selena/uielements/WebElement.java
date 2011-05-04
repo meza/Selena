@@ -1,6 +1,6 @@
-package com.Selena.uielements;
+package hu.meza.Selena.uielements;
 
-import com.Selena.Locator;
+import hu.meza.Selena.Locator;
 import java.util.ArrayList;
 import java.util.List;
 

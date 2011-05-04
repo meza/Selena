@@ -6,17 +6,17 @@
  * @author Gergely Brautigam
  * @version 1.0
  */
-package com.Selena;
+package hu.meza.Selena;
 
 
-import com.Selena.utilities.Utilities;
+import hu.meza.Selena.utilities.Utilities;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverBackedSelenium;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.server.SeleniumServer;
-import org.testng.Reporter;
+import hu.meza.Selena.Reporter;
 
-import com.Selena.utilities.config.SelenaConfiguration;
+import hu.meza.Selena.utilities.config.SelenaConfiguration;
 import com.thoughtworks.selenium.DefaultSelenium;
 import com.thoughtworks.selenium.Selenium;
 import com.thoughtworks.selenium.SeleniumException;
@@ -157,11 +157,7 @@ public class BaseTest
      */
     protected void stopSeleniumServer()
     {
-        try {
-            server.stop();
-        } catch (SeleniumException e) {
-            Reporter.log("Exception when closing server.");
-        }
+        server.stop();
     }
 
 
@@ -170,14 +166,14 @@ public class BaseTest
      */
     protected void setUpSelenium()
     {
-
-        Reporter.log(String.format(
-            "Setting up selenium with data:%s, %d, %s, %s", getConfig().
+       Reporter.log(String.format(
+            "Setting up selenium with data: %s, %d, %s, %s", getConfig().
             getValue(ConfigParams.SELENIUMHOST),
             Integer.parseInt(getConfig().getValue(
             ConfigParams.SELENIUMPORT)),
             getConfig().getValue(ConfigParams.SELENIUMBROWSER),
-            getConfig().getValue(ConfigParams.SELENIUMBASEURL)));
+            Reporter.getHtmlLink(getConfig().getValue(
+                        ConfigParams.SELENIUMBASEURL))));
 
 
         selenium = new DefaultSelenium(
@@ -214,7 +210,12 @@ public class BaseTest
      */
     protected void stopSelenium()
     {
-        selenium.stop();
+        try {
+            selenium.stop();
+
+        } catch (SeleniumException e) {
+            Reporter.log("Selenium close exception: "+e.getMessage());
+        }
     }
 
 

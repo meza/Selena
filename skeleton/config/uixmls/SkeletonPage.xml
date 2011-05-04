@@ -1,11 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 xsi:noNamespaceSchemaLocation="SelenaPage.xsd">
-    <Elements>
-        <WebElement name="aNamedDiv">
+<Elements>
+	<Group name="Basic">
+	    <WebElement name="aNamedDiv">
             <Locators>
                 <id>aNamedDivsID</id>
             </Locators>
-        </WebElement>
-    </Elements>
+         </WebElement>
+	     <Group name="Chapter_1">
+	       <WebElement name="aa">
+	           <Locators>
+                <id>aNamedDivsID1</id>
+            </Locators>
+	       </WebElement> 
+           <WebElement name="aaa">
+               <Locators>
+                <id>aNamedDivsID2</id>
+            </Locators>
+           </WebElement>	       
+	     </Group>
+		<Group name="Chapter_2">
+	           <WebElement name="aNamedDiv2.1">
+		          <Locators>
+			         <id>aNamedDivsID3</id>
+		          </Locators>
+	           </WebElement>
+	           <Group name="Chapter_2.1">
+	              <WebElement name="aNamedDiv2.2">
+                    <Locators>
+                     <id>aNamedDivsID4</id>
+                    </Locators>
+                     </WebElement>
+	            </Group>
+        </Group>
+	</Group>    
+	</Elements>
 </Page>

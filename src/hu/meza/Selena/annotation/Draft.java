@@ -4,7 +4,7 @@
  *
  * @author Brautigam Gergely
  */
-package com.Selena.annotation;
+package hu.meza.Selena.annotation;
 
 
 /**

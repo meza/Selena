@@ -25,10 +25,13 @@
     <property name="jar.dir"                location="${output.dir}${file.separator}jar"/>
     <property name="report.dir"             location="${output.dir}${file.separator}reports"/>
     <property name="log.dir"                location="${output.dir}${file.separator}logs"/>
-    <property name="image.dir"              location="${output.dir}${file.separator}images"/>
+	<property name="image.dir"              location="${output.dir}${file.separator}images"/>
     <property name="firefoxProfileTemplate" location="${selena.dir}${file.separator}config${file.separator}profile"/>
-    <property name="reportNGcss"            location="${selena.dir}${file.separator}config${file.separator}reportStyle.css"/>
+    <property name="reportNGcss"            location="${selena.dir}${file.separator}reportStyle.css"/>
     <property name="testngXml"              value="**/*.xml"/>
+	<property name="suiteThreadPoolSize"    value="1"/>
+	<property name="reportNGListener"       value="org.uncommons.reportng.HTMLReporter,org.uncommons.reportng.JUnitXMLReporter"/>	
+	<property name="customListener"         value=""/>
 
     <target name="initConfig">
         <!-- Setting default properties. ${basedir} will be the implementor porject's
@@ -181,22 +184,27 @@
             <fileset dir="${lib.dir}" includes="**/*.jar" />
             <fileset dir="${bin.dir}" includes="**/*.class"/>
         </path>
-        <testng classpathref="classpath.testNg"
+        <testng 
+        	    classpathref="classpath.testNg"
 		        outputDir="${report.dir}/testNG"
-
+                suitethreadpoolsize="${suiteThreadPoolSize}"
                 workingDir="${testngOutput}"
                 failureproperty="testngfail"
 		        haltOnfailure="false"
                 configfailurepolicy="continue"
 		        delegateCommandSystemProperties="true"
                 useDefaultListeners="false"
-                listeners="org.uncommons.reportng.HTMLReporter,org.uncommons.reportng.JUnitXMLReporter"
+        	    listeners="${reportNGListener},${customListener}"
 		>
+
             <xmlfileset dir="${testng.dir}" includes="${testngXml}"/>
 
             <sysproperty key="org.uncommons.reportng.title"     value="Automated Test Report"/>
 		   <sysproperty key="org.uncommons.reportng.frames"     value="true"/>
 		   <sysproperty key="org.uncommons.reportng.stylesheet" value="${reportNGcss}"/>
+           <sysproperty key="org.uncommons.reportng.escape-output" value="on"/>
+        	
+        	
 
             <sysproperty key="configfilename"               value="${config.file}"/>
             <sysproperty key="selenium.baseUrl"             value="${selenium.baseUrl}" />
@@ -205,7 +213,9 @@
             <sysproperty key="selenium.browser"             value="${selenium.browser}" />
             <sysproperty key="selenium.delay.time"          value="${selenium.delay.time}" />
             <sysproperty key="uixmls.dir"                   value="${uixmls.dir}" />
-            <sysproperty key="image.dir"                    value="${image.dir}" />
+            <sysproperty key="image.dir"                    value="${image.dir}" />        	
+        	<sysproperty key="report.dir"                   value="${report.dir}${file.separator}testNG${file.separator}html" />
+            <sysproperty key="screenshot.dir"               value="${report.dir}${file.separator}testNG${file.separator}html${file.separator}images" />
             <sysproperty key="config.dir"                   value="${config.dir}" />
             <sysproperty key="basedir"                      value="${basedir}" />
         </testng>

@@ -3,13 +3,13 @@
  * and open the template in the editor.
  */
 
-package com.Selena.utilities.config;
+package hu.meza.Selena.utilities.config;
 
 /**
  * Configuration Not Found Exception.
  * @author meza
  */
-public class ConfigurationFileNotFound extends RuntimeException{
+public class ConfigurationCantBeLoaded extends RuntimeException{
 
     /**
      * Default Serial Version UID.
@@ -20,8 +20,8 @@ public class ConfigurationFileNotFound extends RuntimeException{
      * Configuration Not Found Exception.
      * @param filename Key
      */
-    public ConfigurationFileNotFound(final String filename) {
-        super(String.format("Configuration file not found: %s",
+    public ConfigurationCantBeLoaded(final String filename) {
+        super(String.format("Configuration could not be loaded: %s",
                             filename));
     }
 

@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-package com.Selena;
+package hu.meza.Selena;
 
 /**
  * Locators.
