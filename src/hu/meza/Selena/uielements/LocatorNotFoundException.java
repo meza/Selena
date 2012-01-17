@@ -9,8 +9,8 @@ package hu.meza.Selena.uielements;
  *
  * @author meza
  */
+@SuppressWarnings("serial")
 public class LocatorNotFoundException extends RuntimeException{
-
 
     /**
      * Throw when a particular locator is requested on an element.

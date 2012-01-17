@@ -1,5 +1,5 @@
 <!-- Build file for our first application -->
-<project name="Selena" default="test-with-selenium">
+<project name="Selena" default="test-with-selenium" xmlns:ivy="antlib:org.apache.ivy.ant">
 
     <!-- If the file was not imported, set the selena dir to the directory
         containing this build file. (When imported, ${ant.file} is the importer
@@ -30,8 +30,12 @@
     <property name="reportNGcss"            location="${selena.dir}${file.separator}reportStyle.css"/>
     <property name="testngXml"              value="**/*.xml"/>
 	<property name="suiteThreadPoolSize"    value="1"/>
-	<property name="reportNGListener"       value="org.uncommons.reportng.HTMLReporter,org.uncommons.reportng.JUnitXMLReporter"/>	
+	<property name="reportNGListener"       value="org.uncommons.reportng.HTMLReporter,org.uncommons.reportng.JUnitXMLReporter"/>
 	<property name="customListener"         value=""/>
+
+    <target name="deps">
+		<ivy:retrieve />
+    </target>
 
     <target name="initConfig">
         <!-- Setting default properties. ${basedir} will be the implementor porject's
@@ -184,7 +188,7 @@
             <fileset dir="${lib.dir}" includes="**/*.jar" />
             <fileset dir="${bin.dir}" includes="**/*.class"/>
         </path>
-        <testng 
+        <testng
         	    classpathref="classpath.testNg"
 		        outputDir="${report.dir}/testNG"
                 suitethreadpoolsize="${suiteThreadPoolSize}"
@@ -203,8 +207,8 @@
 		   <sysproperty key="org.uncommons.reportng.frames"     value="true"/>
 		   <sysproperty key="org.uncommons.reportng.stylesheet" value="${reportNGcss}"/>
            <sysproperty key="org.uncommons.reportng.escape-output" value="on"/>
-        	
-        	
+
+
 
             <sysproperty key="configfilename"               value="${config.file}"/>
             <sysproperty key="selenium.baseUrl"             value="${selenium.baseUrl}" />
@@ -213,7 +217,7 @@
             <sysproperty key="selenium.browser"             value="${selenium.browser}" />
             <sysproperty key="selenium.delay.time"          value="${selenium.delay.time}" />
             <sysproperty key="uixmls.dir"                   value="${uixmls.dir}" />
-            <sysproperty key="image.dir"                    value="${image.dir}" />        	
+            <sysproperty key="image.dir"                    value="${image.dir}" />
         	<sysproperty key="report.dir"                   value="${report.dir}${file.separator}testNG${file.separator}html" />
             <sysproperty key="screenshot.dir"               value="${report.dir}${file.separator}testNG${file.separator}html${file.separator}images" />
             <sysproperty key="config.dir"                   value="${config.dir}" />

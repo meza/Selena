@@ -1,0 +1,12 @@
+<ivy-module version="2.0">
+	<info organisation="hu.meza" module="selena"/>
+	<dependencies>
+		<dependency org="junit" name="junit" rev="4.8.2"/>
+		<dependency org="checkstyle" name="checkstyle" rev="5.0"/>
+		<dependency org="org.testng" name="testng" rev="6.1.1"/>
+		<dependency org="org.simpleframework" name="simple-xml" rev="2.6"/>
+		<dependency org="velocity" name="velocity-dep" rev="1.4"/>
+		<dependency org="org.seleniumhq.selenium" name="selenium-java" rev="2.1.0"/>
+		<dependency org="org.jbehave" name="jbehave-core" rev="3.5-beta-1"/>
+	</dependencies>
+</ivy-module>

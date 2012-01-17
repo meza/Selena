@@ -1,6 +1,7 @@
 package hu.meza.Selena.uielements;
 
 import hu.meza.Selena.Locator;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -31,7 +32,6 @@ public class Page {
      * The WebElement objects that are on the Page.
      */
     private ArrayList<WebElement> elements = new ArrayList<WebElement>();
-
 
     /**
      * Get a full url put together by the baseUrl and the path of the page

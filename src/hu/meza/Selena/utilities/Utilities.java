@@ -449,7 +449,7 @@ public final class Utilities implements Utils
         {
             public boolean until()
             {
-                return oldText.equals(selenium.getText(locator));
+                return !oldText.equals(selenium.getText(locator));
             }
         }.wait("'" + oldText + "' text located at '" + locator
                    + "' did not change within " + timeout + " ms.", timeout);
@@ -689,6 +689,79 @@ public final class Utilities implements Utils
     }
 
     /**
+     * A utility that waits for a specific element's attribute to contain a
+     * specified value (substring). Waiting for "" content will result immediate
+     * return. Works with any kind of locators. Requires current selenium object
+     * to work with.
+     *
+     * @param selenium
+     *            The selenium instances currently in work.
+     * @param locator
+     *            The locator of the element that may has an attribute
+     * @param attribute
+     *            The name of the attribute beginning with an '@' sign. (e.g.
+     *            '@value' or '@class')
+     * @param attributeValue
+     *            The attribute value that one should wait for
+     * @param timeout
+     *            The maximum amount of time to wait in milliseconds.
+     * @param logLevel
+     *            is the integer value of the actual log level
+     */
+    public void waitForAttributeNotContains(final Selenium selenium,
+            final String locator, final String attribute,
+            final String attributeValue, final int timeout, final int logLevel)
+    {
+        Reporter.log("Waiting for element '" + locator + "' to have an '"
+                + attribute + "' attribute that does not contains '"
+                + attributeValue + "' string.", logLevel);
+
+        new Wait()
+        {
+            public boolean until()
+            {
+                try
+                {
+                    return !selenium.getAttribute(locator + attribute).contains(
+                            attributeValue);
+                } catch (Exception e)
+                {
+                    return !attributeValue.isEmpty();
+                }
+            }
+        }.wait("The value of the '" + locator + "' element's '" + attribute
+                + "' attribute (" + selenium.getAttribute(locator + attribute)
+                + ") contains '" + attributeValue + "' after "
+                + timeout + " ms.", timeout);
+    }
+
+    /**
+     * A utility that waits for a specific element's attribute to contain a
+     * specified value (substring). Waiting for "" content will result immediate
+     * return. Works with any kind of locators. Requires current selenium object
+     * to work with.
+     *
+     * @param selenium
+     *            The selenium instances currently in work.
+     * @param locator
+     *            The locator of the element that may has an attribute
+     * @param attribute
+     *            The name of the attribute beginning with an '@' sign. (e.g.
+     *            '@value' or '@class')
+     * @param attributeValue
+     *            The attribute value that one should wait for
+     * @param timeout
+     *            The maximum amount of time to wait in milliseconds.
+     */
+    public void waitForAttributeNotContains(final Selenium selenium,
+            final String locator, final String attribute,
+            final String attributeValue, final int timeout)
+    {
+        waitForAttributeNotContains(selenium, locator, attribute,
+                attributeValue, timeout, UTIL_LOG_LEVEL);
+    }
+
+    /**
      * A utility that reads a specific element's attribute. Gives "" if the
      * attribute is not present or it has no value. Requires current selenium
      * object to work with.
@@ -827,9 +900,6 @@ public final class Utilities implements Utils
             }
         }.wait("The ajax request did not completed within " + timeout + " ms.",
                 Integer.parseInt(timeout));
-//        selenium.waitForCondition(
-//                "selenium.browserbot.getCurrentWindow().jQuery.active == 0",
-//                timeout);
 
     }
 
@@ -1403,7 +1473,7 @@ public final class Utilities implements Utils
     }
 
     /**
-     * Kill a running process.
+     * Kill a running process. Only for Windows. Only on the runner machine.
      *
      * @param processName
      *            Name of the process to kill.
